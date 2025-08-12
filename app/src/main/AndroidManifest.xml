@@ -21,24 +21,34 @@
         android:theme="@style/Theme.SamaCaisseAndroid"
         tools:targetApi="31">
         <activity
-            android:name=".ConnecteImprimantee"
-            android:exported="true">
+            android:name=".ui.ClientManagementActivity"
+            android:exported="false"
+            android:label="@string/title_activity_client_management"
+            android:theme="@style/Theme.SamaCaisseAndroid" />
+        <activity android:name=".ui.ProductManagementActivity" />
+        <activity
+            android:name=".AdminAuthScreen"
+            android:exported="true"
+            android:label="@string/title_activity_admin_auth_screen"
+            android:theme="@style/Theme.SamaCaisseAndroid">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".UserManagementActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminLoginActivity"
+            android:exported="true"></activity>
+        <activity
+            android:name=".ConnecteImprimantee"
+            android:exported="true"></activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="true"></activity>
     </application>
 
 </manifest>
