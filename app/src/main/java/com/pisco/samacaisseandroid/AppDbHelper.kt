@@ -376,6 +376,38 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
         rows > 0
     }
 
+    suspend fun getUserByUsernameAndPassword(username: String, password: String): User? = withContext(Dispatchers.IO) {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT id, username, role FROM users WHERE username = ? AND password = ?",
+            arrayOf(username, password)
+        )
+        var user: User? = null
+        if (cursor.moveToFirst()) {
+            val id = cursor.getInt(0)
+            val uname = cursor.getString(1)
+            val role = cursor.getString(2)
+            user = User(id, uname, role)
+        }
+        cursor.close()
+        user
+    }
+    fun checkIfAdminExists(): Boolean {
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT COUNT(*) FROM users WHERE role = ?",
+            arrayOf("admin")
+        )
+        var exists = false
+        if (cursor.moveToFirst()) {
+            exists = cursor.getInt(0) > 0
+        }
+        cursor.close()
+        db.close()
+        return exists
+    }
+
+
 
 
 }
