@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.pisco.samacaisseandroid.ui.ClientManagementActivity
-import com.pisco.samacaisseandroid.ui.ProductManagementActivity
+import com.pisco.samacaisseandroid.ProductManagementActivity
 import com.pisco.samacaisseandroid.ui.theme.SamaCaisseAndroidTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

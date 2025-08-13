@@ -6,5 +6,6 @@ data class Product(
     val price: Double,
     val quantity: Double,
     val dateAdded: String,
-    val imageUri: String? = null
+    val imageUri: String? = null,
+    val unit: String
 )

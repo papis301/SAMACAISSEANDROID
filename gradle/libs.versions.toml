@@ -1,5 +1,6 @@
 [versions]
 agp = "8.9.0"
+coilCompose = "2.7.0"
 escposThermalprinterAndroid = "3.4.0"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
@@ -18,6 +19,7 @@ navigationRuntimeAndroid = "2.9.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 escpos-thermalprinter-android = { module = "com.github.DantSu:ESCPOS-ThermalPrinter-Android", version.ref = "escposThermalprinterAndroid" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

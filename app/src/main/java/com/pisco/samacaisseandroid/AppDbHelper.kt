@@ -48,6 +48,7 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
                 price REAL NOT NULL,
                 quantity REAL NOT NULL DEFAULT 0,
                 date_added TEXT NOT NULL,
+                unit TEXT NOT NULL, -- kg, litre, mètre...
                 image_uri TEXT
             );
         """.trimIndent())
@@ -257,19 +258,11 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
         rows > 0
     }
 
-    data class Product(
-        val id: Int,
-        val name: String,
-        val price: Double,
-        val quantity: Double,
-        val dateAdded: String,
-        val imageUri: String?
-    )
-
     suspend fun addProductSuspend(
         name: String,
         price: Double,
         quantity: Double,
+        unit: String,
         dateAdded: String,
         imageUri: String?
     ): Boolean = withContext(Dispatchers.IO) {
@@ -278,6 +271,7 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
             put("name", name)
             put("price", price)
             put("quantity", quantity)
+            put("unit", unit)
             put("date_added", dateAdded)
             put("image_uri", imageUri)
         }
@@ -288,7 +282,7 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
     suspend fun getAllProductsSuspend(): List<Product> = withContext(Dispatchers.IO) {
         val products = mutableListOf<Product>()
         val db = readableDatabase
-        val cursor = db.rawQuery("SELECT id, name, price, quantity, date_added, image_uri FROM $TABLE_PRODUCTS", null)
+        val cursor = db.rawQuery("SELECT id, name, price, quantity, date_added, image_uri, unit FROM $TABLE_PRODUCTS", null)
         if (cursor.moveToFirst()) {
             do {
                 products.add(
@@ -298,7 +292,8 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
                         price = cursor.getDouble(2),
                         quantity = cursor.getDouble(3),
                         dateAdded = cursor.getString(4),
-                        imageUri = cursor.getString(5)
+                        imageUri = cursor.getString(5),
+                        unit = cursor.getString(6)
                     )
                 )
             } while (cursor.moveToNext())
@@ -312,6 +307,7 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
         name: String,
         price: Double,
         quantity: Double,
+        unit: String,
         dateAdded: String,
         imageUri: String?
     ): Boolean = withContext(Dispatchers.IO) {
@@ -320,6 +316,7 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
             put("name", name)
             put("price", price)
             put("quantity", quantity)
+            put("unit", unit)
             put("date_added", dateAdded)
             put("image_uri", imageUri)
         }
@@ -409,5 +406,78 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
 
 
 
+
+
+    // Supprimer un produit
+    fun deleteProduct(id: Int): Boolean {
+        val db = writableDatabase
+        val result = db.delete(TABLE_PRODUCTS, "id = ?", arrayOf(id.toString()))
+        return result > 0
+    }
+
+
+
+    // Ajouter un produit
+    fun addProduct(product: Product): Boolean {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("name", product.name)
+            put("price", product.price)
+            put("quantity", product.quantity)
+            put("unit", product.unit)
+            put("image_uri", product.imageUri) // ⚠ nom exact de la colonne
+            put("date_added", product.dateAdded) // ⚠ nom exact de la colonne
+        }
+        val result = db.insert(TABLE_PRODUCTS, null, values)
+        return result != -1L
+    }
+
+    // Mettre à jour un produit
+    fun updateProduct(product: Product): Boolean {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("name", product.name)
+            put("price", product.price)
+            put("quantity", product.quantity)
+            put("unit", product.unit)
+            put("image_uri", product.imageUri)
+            put("date_added", product.dateAdded)
+        }
+        val result = db.update(
+            TABLE_PRODUCTS,
+            values,
+            "id = ?",
+            arrayOf(product.id.toString())
+        )
+        return result > 0
+    }
+
+    // Récupérer tous les produits
+    fun getAllProducts(): List<Product> {
+        val db = readableDatabase
+        val cursor = db.query(
+            TABLE_PRODUCTS,
+            arrayOf("id", "name", "price", "quantity", "unit", "image_uri", "date_added"),
+            null, null, null, null, "id DESC"
+        )
+
+        val products = mutableListOf<Product>()
+        cursor.use {
+            while (it.moveToNext()) {
+                products.add(
+                    Product(
+                        id = it.getInt(it.getColumnIndexOrThrow("id")),
+                        name = it.getString(it.getColumnIndexOrThrow("name")),
+                        price = it.getDouble(it.getColumnIndexOrThrow("price")),
+                        quantity = it.getDouble(it.getColumnIndexOrThrow("quantity")),
+                        unit = it.getString(it.getColumnIndexOrThrow("unit")),
+                        imageUri = it.getString(it.getColumnIndexOrThrow("image_uri")), // ⚠ nom exact
+                        dateAdded = it.getString(it.getColumnIndexOrThrow("date_added")) // ⚠ nom exact
+                    )
+                )
+            }
+        }
+        return products
+    }
 
 }
