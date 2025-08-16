@@ -40,7 +40,7 @@ public class FactureActivity extends AppCompatActivity {
 
             // 🔥 Utiliser un JOIN pour récupérer le nom du produit
             Cursor items = db.rawQuery(
-                    "SELECT si.quantity, si.price, p.name AS product_name " +
+                    "SELECT si.quantity, si.price, p.name " +
                             "FROM sales_items si " +
                             "JOIN products p ON si.product_id = p.id " +
                             "WHERE si.sale_id=?",
@@ -49,7 +49,7 @@ public class FactureActivity extends AppCompatActivity {
 
             double total = 0;
             while (items.moveToNext()) {
-                String name = items.getString(items.getColumnIndexOrThrow("product_name"));
+                String name = items.getString(items.getColumnIndexOrThrow("name"));
                 int qty = items.getInt(items.getColumnIndexOrThrow("quantity"));
                 double price = items.getDouble(items.getColumnIndexOrThrow("price"));
                 double lineTotal = qty * price; // ✅ calcul du total par ligne
