@@ -5,4 +5,5 @@
     <string name="title_activity_product_management_screen">ProductManagementScreen</string>
     <string name="title_activity_product_management">ProductManagementActivity</string>
     <string name="title_activity_client_management">ClientManagementActivity</string>
+    <string name="title_activity_main_nav_host">MainNavHost</string>
 </resources>

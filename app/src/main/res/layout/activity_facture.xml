@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#FFFFFF">
+
+    <!-- En-tête de la facture -->
+    <TextView
+        android:id="@+id/tvInvoiceTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="FACTURE"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="8dp" />
+
+    <TextView
+        android:id="@+id/tvInvoiceDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Date : 16/08/2025"
+        android:textSize="16sp"
+        android:padding="4dp" />
+
+    <TextView
+        android:id="@+id/tvInvoiceNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Facture N° 001"
+        android:textSize="16sp"
+        android:padding="4dp" />
+
+    <!-- Liste des produits -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Détails des produits :"
+        android:textStyle="bold"
+        android:paddingTop="12dp"
+        android:paddingBottom="8dp"
+        android:textSize="18sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvInvoiceItems"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1dp" />
+
+    <!-- Total -->
+    <TextView
+        android:id="@+id/tvInvoiceTotal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Total : 0 CFA"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:gravity="end"
+        android:padding="8dp" />
+
+    <!-- Boutons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:paddingTop="12dp">
+
+        <Button
+            android:id="@+id/btnPrint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Imprimer" />
+
+        <Button
+            android:id="@+id/btnClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fermer"
+            android:layout_marginStart="12dp" />
+    </LinearLayout>
+
+</LinearLayout>

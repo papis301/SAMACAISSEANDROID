@@ -101,8 +101,8 @@ class AdminLoginActivity : AppCompatActivity() {
             // TODO: Lancer l'activité principale (Dashboard, POS, etc.)
             // startActivity(Intent(this, MainActivity::class.java))
             //finish()
-            startActivity(Intent(this, UserManagementActivity::class.java))
-            finish()
+//            startActivity(Intent(this, UserManagementActivity::class.java))
+//            finish()
 
         } else {
             Toast.makeText(this, "Identifiants invalides", Toast.LENGTH_SHORT).show()

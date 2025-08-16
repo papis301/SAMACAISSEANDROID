@@ -21,6 +21,30 @@
         android:theme="@style/Theme.SamaCaisseAndroid"
         tools:targetApi="31">
         <activity
+            android:name=".java.FactureActivity"
+            android:exported="false" />
+        <activity
+            android:name=".java.CaisseActivity"
+            android:exported="false" />
+        <activity
+            android:name=".java.AdminInterfaceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".java.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".java.RegisterAdminActivity"
+            android:exported="false" />
+        <activity
+            android:name=".java.SplashActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".ui.ClientManagementActivity"
             android:exported="false"
             android:label="@string/title_activity_client_management"
@@ -31,24 +55,20 @@
             android:exported="true"
             android:label="@string/title_activity_admin_auth_screen"
             android:theme="@style/Theme.SamaCaisseAndroid">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".UserManagementActivity"
             android:exported="false" />
         <activity
             android:name=".AdminLoginActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".ConnecteImprimantee"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".MainActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
     </application>
 
 </manifest>

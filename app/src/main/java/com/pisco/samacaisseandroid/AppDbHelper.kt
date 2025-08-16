@@ -4,8 +4,12 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.pisco.samacaisseandroid.java.CartItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -479,5 +483,236 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
         }
         return products
     }
+
+    fun insertInvoice(total: Double, date: String): Long {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("total", total)
+            put("date", date)
+        }
+        return db.insert("sales", null, values)
+    }
+
+    fun insertInvoiceItem(invoiceId: Long, productId: Long, quantity: Int, price: Double) {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("invoice_id", invoiceId)
+            put("product_id", productId)
+            put("quantity", quantity)
+            put("price", price)
+        }
+        db.insert("sales_items", null, values)
+    }
+
+
+    data class Sale(
+        val id: Int,
+        val date: String,
+        val total: Double
+    )
+
+    data class SaleItem(
+        val id: Int,
+        val saleId: Int,
+        val productId: Int,
+        val productName: String,
+        val quantity: Int,
+        val price: Double
+    )
+
+    fun insertSale(date: String, total: Double, items: List<CartItem>): Long {
+        val db = writableDatabase
+        db.beginTransaction()
+        var saleId: Long = -1
+        try {
+            // Insert into sales
+            val saleValues = ContentValues()
+            saleValues.put("date", date)
+            saleValues.put("total", total)
+            saleId = db.insert("sales", null, saleValues)
+
+            // Insert items
+            for (item in items) {
+                val itemValues = ContentValues()
+                itemValues.put("sale_id", saleId)
+                itemValues.put("product_id", item.product.id)
+                itemValues.put("quantity", item.quantity)
+                itemValues.put("price", item.product.price)
+                db.insert("sales_item", null, itemValues)
+            }
+
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+        }
+        return saleId
+    }
+
+
+
+
+    fun getAllSales(): List<Sale> {
+        val salesList = mutableListOf<Sale>()
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM sales ORDER BY id DESC", null)
+        if (cursor.moveToFirst()) {
+            do {
+                val sale = Sale(
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                    date = cursor.getString(cursor.getColumnIndexOrThrow("date")),
+                    total = cursor.getDouble(cursor.getColumnIndexOrThrow("total"))
+                )
+                salesList.add(sale)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return salesList
+    }
+
+    fun getSaleItems(saleId: Int): List<SaleItem> {
+        val items = mutableListOf<SaleItem>()
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT si.id, si.sale_id, si.product_id, p.name, si.quantity, si.price " +
+                    "FROM sales_item si INNER JOIN products p ON si.product_id = p.id " +
+                    "WHERE si.sale_id = ?",
+            arrayOf(saleId.toString())
+        )
+        if (cursor.moveToFirst()) {
+            do {
+                val item = SaleItem(
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                    saleId = cursor.getInt(cursor.getColumnIndexOrThrow("sale_id")),
+                    productId = cursor.getInt(cursor.getColumnIndexOrThrow("product_id")),
+                    productName = cursor.getString(cursor.getColumnIndexOrThrow("name")),
+                    quantity = cursor.getInt(cursor.getColumnIndexOrThrow("quantity")),
+                    price = cursor.getDouble(cursor.getColumnIndexOrThrow("price"))
+                )
+                items.add(item)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return items
+    }
+
+//    fun insertSaleWithItems(total: Int, cartItems: List<CartItem>): Long {
+//        val db = this.writableDatabase
+//        var saleId: Long = -1
+//
+//        db.beginTransaction()
+//        try {
+//            // 1. Insertion dans sales
+//            val saleValues = ContentValues()
+//            saleValues.put("total", total)
+//            saleValues.put(
+//                "date",
+//                SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+//            )
+//            saleId = db.insert("sales", null, saleValues)
+//
+//            // 2. Insertion des items associés
+//            for (item in cartItems) {
+//                val itemValues = ContentValues()
+//                itemValues.put("sale_id", saleId)
+//                itemValues.put("product_name", item.getProductName())
+//                itemValues.put("price", item.getPrice())
+//                itemValues.put("qty", item.getQuantity())
+//                itemValues.put("total", item.getPrice() * item.getQuantity())
+//
+//                db.insert("sales_item", null, itemValues)
+//            }
+//
+//            db.setTransactionSuccessful()
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        } finally {
+//            db.endTransaction()
+//        }
+//
+//        return saleId
+//    }
+
+//    fun saveSaleWithItems(cart: List<CartItem>): Long {
+//        val db = writableDatabase
+//        var saleId: Long = -1
+//
+//        db.beginTransaction()
+//        try {
+//            // Calculer le total
+//            val total = cart.sumOf { it.getTotal() }
+//
+//            // Insérer dans la table sales
+//            val saleValues = ContentValues().apply {
+//                put("total", total)
+//                put(
+//                    "date",
+//                    SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+//                )
+//            }
+//            saleId = db.insert("sales", null, saleValues)
+//
+//            // Insérer les items dans sales_item
+//            for (c in cart) {
+//                val itemValues = ContentValues().apply {
+//                    put("sale_id", saleId)
+//                    put("product_name", c.product.name)
+//                    put("qty", c.quantity)
+//                    put("price", c.product.price)
+//                    put("total", c.getTotal())
+//                }
+//                db.insert("sales_item", null, itemValues)
+//            }
+//
+//            db.setTransactionSuccessful()
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        } finally {
+//            db.endTransaction()
+//        }
+//
+//        return saleId
+//    }
+
+    fun saveSaleWithItems(cart: List<CartItem>): Long {
+        val db = writableDatabase
+        var saleId: Long = -1
+
+        db.beginTransaction()
+        try {
+            // Calculer le total
+            val total = cart.sumOf { it.getTotal() }
+
+            // Insérer dans la table sales
+            val saleValues = ContentValues().apply {
+                put("total", total)
+                put(
+                    "date",
+                    SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+                )
+            }
+            saleId = db.insert("sales", null, saleValues)
+
+            // Insérer les items dans sales_items avec product_id
+            for (c in cart) {
+                val itemValues = ContentValues().apply {
+                    put("sale_id", saleId)
+                    put("product_id", c.product.id) // Utilisation de l'ID produit
+                    put("quantity", c.quantity)
+                    put("price", c.product.price)
+
+                }
+                db.insert("sales_items", null, itemValues)
+            }
+
+            db.setTransactionSuccessful()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            db.endTransaction()
+        }
+
+        return saleId
+    }
+
 
 }
