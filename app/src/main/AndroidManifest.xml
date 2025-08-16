@@ -21,6 +21,9 @@
         android:theme="@style/Theme.SamaCaisseAndroid"
         tools:targetApi="31">
         <activity
+            android:name=".java.ImprimerKotlin"
+            android:exported="false" />
+        <activity
             android:name=".java.FactureActivity"
             android:exported="false" />
         <activity
@@ -54,9 +57,7 @@
             android:name=".AdminAuthScreen"
             android:exported="true"
             android:label="@string/title_activity_admin_auth_screen"
-            android:theme="@style/Theme.SamaCaisseAndroid">
-
-        </activity>
+            android:theme="@style/Theme.SamaCaisseAndroid" />
         <activity
             android:name=".UserManagementActivity"
             android:exported="false" />
