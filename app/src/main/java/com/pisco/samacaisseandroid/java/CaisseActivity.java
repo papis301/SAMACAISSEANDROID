@@ -7,8 +7,10 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.*;
@@ -18,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.pisco.samacaisseandroid.AppDbHelper;
+import com.pisco.samacaisseandroid.Client;
 import com.pisco.samacaisseandroid.R;
 
 import java.text.SimpleDateFormat;
@@ -38,6 +41,13 @@ public class CaisseActivity extends AppCompatActivity {
     AppDbHelper dbHelper;
     Toolbar toolbar;
     TextView txtTotal;
+    EditText searchClient;
+    TextView selectedClient;
+    private Integer currentClientId = null; // null si aucun client sélectionné
+    private String selectedPaymentType = "cash";
+    Button btnSelectClient ;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +59,11 @@ public class CaisseActivity extends AppCompatActivity {
         btnValidate = findViewById(R.id.btnValidate);
         dbHelper = new AppDbHelper(this);
         txtTotal = findViewById(R.id.txtTotal);
+
+         searchClient = findViewById(R.id.searchClient);
+         selectedClient = findViewById(R.id.selectedClient);
+         btnSelectClient = findViewById(R.id.btnSelectClient);
+        btnSelectClient.setOnClickListener(v -> showClientSelectionDialog(""));
 
          toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -63,6 +78,49 @@ public class CaisseActivity extends AppCompatActivity {
             }
             return false;
         });
+
+        final int[] selectedClientId = { -1 }; // -1 si aucun client sélectionné
+
+        searchClient.setOnEditorActionListener((v, actionId, event) -> {
+            String query = searchClient.getText().toString().trim();
+            if (!query.isEmpty()) {
+                showClientSelectionDialog(query);
+            }
+            return true;
+        });
+
+//        searchClient.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                String query = s.toString().trim();
+//                if (!query.isEmpty()) {
+//                    SQLiteDatabase db = dbHelper.getReadableDatabase();
+//                    Cursor c = db.rawQuery(
+//                            "SELECT id, name, phone FROM clients WHERE name LIKE ? OR phone LIKE ? LIMIT 1",
+//                            new String[]{"%" + query + "%", "%" + query + "%"}
+//                    );
+//                    if (c.moveToFirst()) {
+//                        selectedClientId[0] = c.getInt(0);
+//                        String name = c.getString(1);
+//                        String phone = c.getString(2);
+//                        selectedClient.setText("Client sélectionné : " + name + " (" + phone + ")");
+//                    } else {
+//                        selectedClientId[0] = -1;
+//                        selectedClient.setText("Aucun client trouvé");
+//                    }
+//                    c.close();
+//                } else {
+//                    selectedClientId[0] = -1;
+//                    selectedClient.setText("Aucun client sélectionné");
+//                }
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {}
+//        });
 
 
         // Charger produits depuis SQLite
@@ -188,37 +246,51 @@ public class CaisseActivity extends AppCompatActivity {
 //
     }
 
+    private void showClientSelectionDialog(String query) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT id, name, phone FROM clients WHERE name LIKE ? OR phone LIKE ?",
+                new String[]{"%" + query + "%", "%" + query + "%"}
+        );
 
-    //    private void saveSale() {
-//        double total = 0;
-//        for (CartItem c : cart) total += c.getTotal();
-//
-//
-//        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//        ContentValues values = new ContentValues();
-//        values.put("total", total);
-//        values.put("date", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
-//        long saleId = db.insert("sales", null, values);
-//
-//        for (CartItem c : cart) {
-//            ContentValues item = new ContentValues();
-//            item.put("sale_id", saleId);
-//            item.put("product_name", c.product.name);
-//            item.put("qty", c.quantity);
-//            item.put("price", c.product.price);
-//            item.put("total", c.getTotal());
-//            db.insert("sales_item", null, item);
-//        }
-//
-//        // Afficher facture
-//        Intent intent = new Intent(this, FactureActivity.class);
-//        intent.putExtra("sale_id", saleId);
-//        startActivity(intent);
-//        cart.clear();
-//        refreshCart();
-//    }
+        List<Client> clients = new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(0);
+                String name = cursor.getString(1);
+                String phone = cursor.getString(2);
+                clients.add(new Client(id, name, phone));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        if (clients.isEmpty()) {
+            Toast.makeText(this, "Aucun client trouvé", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Si plusieurs clients → dialogue avec liste
+        String[] clientNames = new String[clients.size()];
+        for (int i = 0; i < clients.size(); i++) {
+            clientNames[i] = clients.get(i).getName() + " (" + clients.get(i).getPhone() + ")";
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Sélectionner un client")
+                .setItems(clientNames, (dialog, which) -> {
+                    Client selected = clients.get(which);
+                    selectedClient.setText(selected.getName() + " (" + selected.getPhone() + ")");
+                    // Tu peux aussi stocker l'id du client pour la facture
+                    currentClientId = selected.getId();
+                })
+                .setNegativeButton("Annuler", (d, w) -> d.dismiss())
+                .show();
+    }
+
+
+
 private void saveSale() {
-    long saleId = dbHelper.saveSaleWithItems(cart);
+    long saleId = dbHelper.saveSaleWithItems(cart, currentClientId, selectedPaymentType);
 
     if (saleId != -1) {
         // Afficher facture

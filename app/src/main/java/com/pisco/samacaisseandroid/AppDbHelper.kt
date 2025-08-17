@@ -72,6 +72,7 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
                 client_id INTEGER,
                 date TEXT NOT NULL,
                 total REAL NOT NULL,
+                payment_type TEXT,
                 FOREIGN KEY(client_id) REFERENCES $TABLE_CLIENTS(id)
             );
         """)
@@ -683,7 +684,52 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
 //        return saleId
 //    }
 
-    fun saveSaleWithItems(cart: List<CartItem>): Long {
+//    fun saveSaleWithItems(cart: List<CartItem>): Long {
+//        val db = writableDatabase
+//        var saleId: Long = -1
+//
+//        db.beginTransaction()
+//        try {
+//            // Calculer le total
+//            val total = cart.sumOf { it.getTotal() }
+//
+//            // Insérer dans la table sales
+//            val saleValues = ContentValues().apply {
+//                put("total", total)
+//                put(
+//                    "date",
+//                    SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+//                )
+//            }
+//            saleId = db.insert("sales", null, saleValues)
+//
+//            // Insérer les items dans sales_items avec product_id
+//            for (c in cart) {
+//                val itemValues = ContentValues().apply {
+//                    put("sale_id", saleId)
+//                    put("product_id", c.product.id) // Utilisation de l'ID produit
+//                    put("quantity", c.quantity)
+//                    put("price", c.product.price)
+//
+//                }
+//                db.insert("sales_items", null, itemValues)
+//            }
+//
+//            db.setTransactionSuccessful()
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        } finally {
+//            db.endTransaction()
+//        }
+//
+//        return saleId
+//    }
+
+    fun saveSaleWithItems(
+        cart: List<CartItem>,
+        clientId: Int? = null,      // nullable, null si pas de client
+        paymentType: String = "cash" // "cash" ou "credit"
+    ): Long {
         val db = writableDatabase
         var saleId: Long = -1
 
@@ -699,6 +745,8 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
                     "date",
                     SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
                 )
+                clientId?.let { put("client_id", it) }  // ajout du client si sélectionné
+                put("payment_type", paymentType)         // type de paiement
             }
             saleId = db.insert("sales", null, saleValues)
 
@@ -706,10 +754,9 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
             for (c in cart) {
                 val itemValues = ContentValues().apply {
                     put("sale_id", saleId)
-                    put("product_id", c.product.id) // Utilisation de l'ID produit
+                    put("product_id", c.product.id)
                     put("quantity", c.quantity)
                     put("price", c.product.price)
-
                 }
                 db.insert("sales_items", null, itemValues)
             }
@@ -723,6 +770,7 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
 
         return saleId
     }
+
 
 
 }

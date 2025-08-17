@@ -50,7 +50,33 @@
             android:layout_weight="1"
             android:orientation="vertical"
             android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp">
 
+                <EditText
+                    android:id="@+id/searchClient"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Rechercher un client (nom ou téléphone)"
+                    android:inputType="text"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/selectedClient"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Aucun client sélectionné"
+                    android:textStyle="italic"
+                    android:padding="4dp"/>
+                <Button
+                    android:id="@+id/btnSelectClient"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Choisir Client (facultatif)" />
+            </LinearLayout>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -64,6 +90,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
+
+
 
             <TextView
                 android:id="@+id/txtTotal"
