@@ -60,7 +60,7 @@ public class CartAdapter extends BaseAdapter {
         // Bouton modifier quantité
         btnEdit.setOnClickListener(v -> {
             EditText input = new EditText(context);
-            input.setInputType(InputType.TYPE_CLASS_NUMBER);
+            input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL);
             input.setText(String.valueOf(item.getQuantity()));
 
             new AlertDialog.Builder(context)
@@ -69,7 +69,9 @@ public class CartAdapter extends BaseAdapter {
                     .setPositiveButton("Valider", (d, w) -> {
                         String value = input.getText().toString().trim();
                         if (!value.isEmpty()) {
-                            int newQty = Integer.parseInt(value);
+                            value = value.replace(",", ".");
+                            double newQty = Double.parseDouble(value);
+                            //int newQty = Integer.parseInt(value);
                             if (newQty > 0) {
                                 item.setQuantity(newQty);
                             } else {

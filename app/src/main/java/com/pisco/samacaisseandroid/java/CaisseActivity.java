@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -93,7 +94,7 @@ public class CaisseActivity extends AppCompatActivity {
                     .setPositiveButton("Modifier quantité", (dialog, which) -> {
                         // Ouvrir un second dialog avec EditText pour modifier
                         EditText input = new EditText(this);
-                        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+                        //input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
                         input.setText(String.valueOf(item.getQuantity()));
 
                         new AlertDialog.Builder(this)
@@ -102,7 +103,10 @@ public class CaisseActivity extends AppCompatActivity {
                                 .setPositiveButton("Valider", (d, w) -> {
                                     String value = input.getText().toString().trim();
                                     if (!value.isEmpty()) {
-                                        int newQuantity = Integer.parseInt(value);
+                                        // Remplacer virgule par point
+                                        value = value.replace(",", ".");
+                                        double newQuantity = Double.parseDouble(value);
+                                        //int newQuantity = Integer.parseInt(value);
                                         if (newQuantity > 0) {
                                             item.setQuantity(newQuantity);
                                         } else {
@@ -146,7 +150,7 @@ public class CaisseActivity extends AppCompatActivity {
     private void showQuantityDialog(Product product) {
         EditText input = new EditText(this);
         input.setHint("Quantité");
-        input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL);
 
         new AlertDialog.Builder(this)
                 .setTitle("Quantité pour " + product.getName())
@@ -154,7 +158,9 @@ public class CaisseActivity extends AppCompatActivity {
                 .setPositiveButton("OK", (dialog, which) -> {
                     String val = input.getText().toString();
                     if (!val.isEmpty()) {
-                        int qty = Integer.parseInt(val);
+                        val = val.replace(",", "."); // support virgules
+                        double qty = Double.parseDouble(val);
+                        //int qty = Integer.parseInt(val);
                         cart.add(new CartItem(product, qty));
                         refreshCart();
                     }

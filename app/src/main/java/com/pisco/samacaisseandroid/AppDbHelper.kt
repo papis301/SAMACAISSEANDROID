@@ -82,7 +82,7 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 sale_id INTEGER NOT NULL,
                 product_id INTEGER NOT NULL,
-                quantity INTEGER NOT NULL,
+                quantity DOUBLE NOT NULL,
                 price REAL NOT NULL,
                 FOREIGN KEY(sale_id) REFERENCES $TABLE_SALES(id),
                 FOREIGN KEY(product_id) REFERENCES $TABLE_PRODUCTS(id)

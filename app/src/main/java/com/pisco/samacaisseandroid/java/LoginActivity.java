@@ -114,7 +114,7 @@ public class LoginActivity extends AppCompatActivity {
         if (cursor.moveToFirst()) {
             userId = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
             userIdo = userId;
-            Toast.makeText(this, "Identifiants "+userIdo, Toast.LENGTH_SHORT).show();
+           // Toast.makeText(this, "Identifiants "+userIdo, Toast.LENGTH_SHORT).show();
 
         }
 

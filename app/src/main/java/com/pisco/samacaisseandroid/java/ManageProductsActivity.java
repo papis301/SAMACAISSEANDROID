@@ -91,7 +91,7 @@ public class ManageProductsActivity extends AppCompatActivity {
 
         // Spinner unité
         ArrayAdapter<String> unitAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
-                new String[]{"kg", "litre", "mètre"});
+                new String[]{"kg", "litre", "mètre","unité"});
         unitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerUnit.setAdapter(unitAdapter);
 
@@ -109,10 +109,31 @@ public class ManageProductsActivity extends AppCompatActivity {
                     String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
 
                     String name = inputName.getText().toString().trim();
-                    double price = Double.parseDouble(inputPrice.getText().toString().trim());
-                    double quantity = Double.parseDouble(inputQuantity.getText().toString().trim());
+                    String priceStr = inputPrice.getText().toString().trim();
+                    String qtyStr = inputQuantity.getText().toString().trim();
                     String unit = spinnerUnit.getSelectedItem().toString();
 
+                    if (name.isEmpty() || priceStr.isEmpty() || qtyStr.isEmpty()) {
+                        Toast.makeText(this, "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    // Remplacer virgule par point
+                    priceStr = priceStr.replace(",", ".");
+                    qtyStr = qtyStr.replace(",", ".");
+
+                    double price;
+                    double quantity;
+
+                    try {
+                        price = Double.parseDouble(priceStr);
+                        quantity = Double.parseDouble(qtyStr);
+                    } catch (NumberFormatException e) {
+                        Toast.makeText(this, "Valeur numérique invalide", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    // Enregistrement dans SQLite
                     SQLiteDatabase db = dbHelper.getWritableDatabase();
                     ContentValues values = new ContentValues();
                     values.put("name", name);
@@ -134,6 +155,7 @@ public class ManageProductsActivity extends AppCompatActivity {
                 .setNegativeButton("Annuler", null)
                 .show();
     }
+
 
     private void showEditDeleteDialog(Product product) {
         new AlertDialog.Builder(this)
@@ -158,7 +180,7 @@ public class ManageProductsActivity extends AppCompatActivity {
         inputQuantity.setText(String.valueOf(product.getQuantity()));
 
         ArrayAdapter<String> unitAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
-                new String[]{"kg", "litre", "mètre"});
+                new String[]{"kg", "litre", "mètre","unité"});
         unitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerUnit.setAdapter(unitAdapter);
         spinnerUnit.setSelection(unitAdapter.getPosition(product.getUnit()));

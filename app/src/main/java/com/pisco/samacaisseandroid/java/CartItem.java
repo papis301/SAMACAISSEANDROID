@@ -2,9 +2,9 @@ package com.pisco.samacaisseandroid.java;
 
 public class CartItem {
     private Product product;
-    private int quantity;
+    private double  quantity;
 
-    public CartItem(Product product, int quantity) {
+    public CartItem(Product product, double  quantity) {
         this.setProduct(product);
         this.setQuantity(quantity);
     }
@@ -22,7 +22,7 @@ public class CartItem {
         return getProduct().getPrice();
     }
 
-    public int getQuantity() {
+    public double  getQuantity() {
         return quantity;
     }
 
@@ -34,7 +34,7 @@ public class CartItem {
         this.product = product;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(double  quantity) {
         this.quantity = quantity;
     }
 }

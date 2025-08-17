@@ -205,7 +205,7 @@ public class FactureActivity extends AppCompatActivity {
              total = Double.parseDouble(sale.getString(sale.getColumnIndexOrThrow("total")));
             while (items.moveToNext()) {
                 String name = items.getString(items.getColumnIndexOrThrow("name"));
-                int qty = items.getInt(items.getColumnIndexOrThrow("quantity"));
+                double qty = items.getInt(items.getColumnIndexOrThrow("quantity"));
                 double price = items.getDouble(items.getColumnIndexOrThrow("price"));
                 double lineTotal = qty * price; // ✅ calcul du total par ligne
                 //total += lineTotal;
