@@ -1,6 +1,7 @@
 package com.pisco.samacaisseandroid.java;
 
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -10,13 +11,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.pisco.samacaisseandroid.ProductManagementActivity;
 import com.pisco.samacaisseandroid.R;
+import com.pisco.samacaisseandroid.UserHistoryActivity;
 import com.pisco.samacaisseandroid.UserManagementActivity;
 import com.pisco.samacaisseandroid.ui.ClientManagementActivity;
 
 public class AdminInterfaceActivity extends AppCompatActivity {
 
-    Button btnUsers, btnProducts, btnClients, btnLogout;
+    Button btnUsers, btnProducts, btnClients, btnLogout, btnHistory;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +28,7 @@ public class AdminInterfaceActivity extends AppCompatActivity {
         btnUsers = findViewById(R.id.btnUsers);
         btnProducts = findViewById(R.id.btnProducts);
         btnClients = findViewById(R.id.btnClients);
+        btnHistory = findViewById(R.id.historiqueuser);
         btnLogout = findViewById(R.id.btnLogout);
 
         // Redirection vers Gestion Utilisateurs
@@ -48,6 +52,13 @@ public class AdminInterfaceActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(AdminInterfaceActivity.this, ClientManagementActivity.class));
+            }
+        });
+
+        btnHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(AdminInterfaceActivity.this, UserHistoryActivity.class));
             }
         });
 

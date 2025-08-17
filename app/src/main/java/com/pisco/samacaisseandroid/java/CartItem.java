@@ -10,16 +10,16 @@ public class CartItem {
     }
 
     public double getTotal() {
-        return getProduct().price * getQuantity();
+        return getProduct().getPrice() * getQuantity();
     }
 
     // Getter pratique pour éviter d'écrire item.product.name partout
     public String getName() {
-        return getProduct().name;
+        return getProduct().getName();
     }
 
     public double getPrice() {
-        return getProduct().price;
+        return getProduct().getPrice();
     }
 
     public int getQuantity() {

@@ -21,6 +21,11 @@
         android:theme="@style/Theme.SamaCaisseAndroid"
         tools:targetApi="31">
         <activity
+            android:name=".UserHistoryActivity"
+            android:exported="false"
+            android:label="@string/title_activity_user_history"
+            android:theme="@style/Theme.SamaCaisseAndroid" />
+        <activity
             android:name=".java.ImprimerKotlin"
             android:exported="false" />
         <activity

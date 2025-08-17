@@ -1,7 +1,9 @@
 package com.pisco.samacaisseandroid.java;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -9,12 +11,15 @@ import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.*;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.pisco.samacaisseandroid.AppDbHelper;
 import com.pisco.samacaisseandroid.R;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import androidx.appcompat.widget.Toolbar;
 import androidx.appcompat.widget.SearchView;
@@ -64,7 +69,7 @@ public class CaisseActivity extends AppCompatActivity {
 
         // Adapter Produits
         ArrayList<String> productNames = new ArrayList<>();
-        for (Product p : products) productNames.add(p.name + " - " + p.price + " CFA");
+        for (Product p : products) productNames.add(p.getName() + " - " + p.getPrice() + " CFA");
         productAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, productNames);
         listProducts.setAdapter(productAdapter);
 
@@ -144,7 +149,7 @@ public class CaisseActivity extends AppCompatActivity {
         input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
 
         new AlertDialog.Builder(this)
-                .setTitle("Quantité pour " + product.name)
+                .setTitle("Quantité pour " + product.getName())
                 .setView(input)
                 .setPositiveButton("OK", (dialog, which) -> {
                     String val = input.getText().toString();
@@ -170,12 +175,11 @@ public class CaisseActivity extends AppCompatActivity {
         txtTotal.setText("Total: " + total + " CFA");
 
         // Mettre à jour l'adapter du panier
-//        if (cartAdapter == null) {
             cartAdapter = new CartAdapter(this, cart, this::refreshCart);
             listCart.setAdapter(cartAdapter);
-//        } else {
-//            cartAdapter.notifyDataSetChanged();
-//        }
+
+
+//
     }
 
 
@@ -230,6 +234,7 @@ private void saveSale() {
 
         // Récupérer SearchView
         MenuItem searchItem = menu.findItem(R.id.action_search);
+        MenuItem logout = menu.findItem(R.id.action_logout);
         SearchView searchView = (SearchView) searchItem.getActionView();
 
         searchView.setQueryHint("Rechercher un produit...");
@@ -248,8 +253,42 @@ private void saveSale() {
             }
         });
 
+        //MenuItem logout1 = logout;
+        MenuItem menuItem = logout.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(@NonNull MenuItem menuItem) {
+                // Déconnexion
+                SharedPreferences prefs = getSharedPreferences("session_prefs", MODE_PRIVATE);
+                long sessionId = prefs.getLong("current_session_id", -1);
+
+                if (sessionId != -1) {
+                    String logoutTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
+                    SQLiteDatabase db = dbHelper.getWritableDatabase();
+                    ContentValues values = new ContentValues();
+                    values.put("logout_time", logoutTime);
+
+                    db.update("user_sessions", values, "id=?", new String[]{String.valueOf(sessionId)});
+                }
+                Toast.makeText(getApplicationContext(), "Déconnexion...", Toast.LENGTH_SHORT).show();
+
+                // Vider le panier si nécessaire
+                cart.clear();
+                refreshCart();
+
+                // Rediriger vers LoginActivity et fermer la CaisseActivity
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish(); // ferme CaisseActivity
+                return true;
+            }
+        });
+
+
         return true;
     }
+
+
 
 
 }

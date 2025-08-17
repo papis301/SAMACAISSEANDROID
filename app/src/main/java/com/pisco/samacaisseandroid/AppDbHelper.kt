@@ -44,6 +44,14 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
             );
         """)
 
+        db.execSQL("CREATE TABLE user_sessions (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "user_id INTEGER," +
+                "login_time TEXT," +
+                "logout_time TEXT," +
+                "FOREIGN KEY(user_id) REFERENCES users(id)" +
+                ");");
+
         // Création table produits
         db.execSQL("""
             CREATE TABLE $TABLE_PRODUCTS (
