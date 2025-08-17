@@ -61,13 +61,13 @@ public class LoginActivity extends AppCompatActivity {
             cursor.close();
 
             if (role.equalsIgnoreCase("admin")) {
-                Toast.makeText(this, "Admin ok", Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, "Admin ok", Toast.LENGTH_LONG).show();
 
                 Intent intent = new Intent(LoginActivity.this, AdminInterfaceActivity.class); // écran admin
                 startActivity(intent);
                 finish();
             } else {
-                Toast.makeText(this, "User ok", Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, "User ok", Toast.LENGTH_LONG).show();
 
                 Intent intent = new Intent(LoginActivity.this, CaisseActivity.class); // écran employé
                 startActivity(intent);

@@ -1,11 +1,11 @@
 package com.pisco.samacaisseandroid.java;
 
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.*;
@@ -13,10 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.pisco.samacaisseandroid.AppDbHelper;
-import com.pisco.samacaisseandroid.MainActivity;
 import com.pisco.samacaisseandroid.R;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 import androidx.appcompat.widget.Toolbar;
 import androidx.appcompat.widget.SearchView;
@@ -33,6 +31,7 @@ public class CaisseActivity extends AppCompatActivity {
     ArrayList<CartItem> cart = new ArrayList<>();
     AppDbHelper dbHelper;
     Toolbar toolbar;
+    TextView txtTotal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +42,7 @@ public class CaisseActivity extends AppCompatActivity {
         listCart = findViewById(R.id.listCart);
         btnValidate = findViewById(R.id.btnValidate);
         dbHelper = new AppDbHelper(this);
+        txtTotal = findViewById(R.id.txtTotal);
 
          toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -74,11 +74,49 @@ public class CaisseActivity extends AppCompatActivity {
             showQuantityDialog(selected);
         });
 
-        // Clic panier → suppression
+//        // Clic panier → suppression
+//        listCart.setOnItemClickListener((parent, view, position, id) -> {
+//            cart.remove(position);
+//            refreshCart();
+//        });
         listCart.setOnItemClickListener((parent, view, position, id) -> {
-            cart.remove(position);
-            refreshCart();
+            CartItem item = cart.get(position);
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Action sur " + item.getName())
+                    .setMessage("Que voulez-vous faire ?")
+                    .setPositiveButton("Modifier quantité", (dialog, which) -> {
+                        // Ouvrir un second dialog avec EditText pour modifier
+                        EditText input = new EditText(this);
+                        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+                        input.setText(String.valueOf(item.getQuantity()));
+
+                        new AlertDialog.Builder(this)
+                                .setTitle("Modifier la quantité")
+                                .setView(input)
+                                .setPositiveButton("Valider", (d, w) -> {
+                                    String value = input.getText().toString().trim();
+                                    if (!value.isEmpty()) {
+                                        int newQuantity = Integer.parseInt(value);
+                                        if (newQuantity > 0) {
+                                            item.setQuantity(newQuantity);
+                                        } else {
+                                            cart.remove(position); // 0 → suppression
+                                        }
+                                        refreshCart();
+                                    }
+                                })
+                                .setNegativeButton("Annuler", (d, w) -> d.dismiss())
+                                .show();
+                    })
+                    .setNegativeButton("Supprimer", (dialog, which) -> {
+                        cart.remove(position);
+                        refreshCart();
+                    })
+                    .setNeutralButton("Annuler", (dialog, which) -> dialog.dismiss())
+                    .show();
         });
+
 
         // Valider facture
         btnValidate.setOnClickListener(v -> saveSale());
@@ -121,15 +159,27 @@ public class CaisseActivity extends AppCompatActivity {
     }
 
     private void refreshCart() {
-        ArrayList<String> cartNames = new ArrayList<>();
-        for (CartItem c : cart) {
-            cartNames.add(c.product.name + " x" + c.quantity + " = " + c.getTotal() + " CFA");
+        // Calcul du total
+        double total = 0;
+        for (CartItem item : cart) {
+            total += item.getTotal();
         }
-        cartAdapter = new CartAdapter(this, cart);
-        listCart.setAdapter(cartAdapter);
+
+        // Mise à jour du TextView total
+
+        txtTotal.setText("Total: " + total + " CFA");
+
+        // Mettre à jour l'adapter du panier
+//        if (cartAdapter == null) {
+            cartAdapter = new CartAdapter(this, cart, this::refreshCart);
+            listCart.setAdapter(cartAdapter);
+//        } else {
+//            cartAdapter.notifyDataSetChanged();
+//        }
     }
 
-//    private void saveSale() {
+
+    //    private void saveSale() {
 //        double total = 0;
 //        for (CartItem c : cart) total += c.getTotal();
 //

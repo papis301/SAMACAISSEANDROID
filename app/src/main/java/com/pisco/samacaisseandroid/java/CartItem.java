@@ -1,15 +1,41 @@
 package com.pisco.samacaisseandroid.java;
 
 public class CartItem {
-    public Product product;
-    public int quantity;
+    private Product product;
+    private int quantity;
 
     public CartItem(Product product, int quantity) {
-        this.product = product;
-        this.quantity = quantity;
+        this.setProduct(product);
+        this.setQuantity(quantity);
     }
 
     public double getTotal() {
-        return product.price * quantity;
+        return getProduct().price * getQuantity();
+    }
+
+    // Getter pratique pour éviter d'écrire item.product.name partout
+    public String getName() {
+        return getProduct().name;
+    }
+
+    public double getPrice() {
+        return getProduct().price;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }
+
