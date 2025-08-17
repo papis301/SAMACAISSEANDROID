@@ -431,6 +431,8 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
 
     // Ajouter un produit
     fun addProduct(product: Product): Boolean {
+        val now = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+
         val db = writableDatabase
         val values = ContentValues().apply {
             put("name", product.name)
@@ -438,7 +440,7 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
             put("quantity", product.quantity)
             put("unit", product.unit)
             put("image_uri", product.imageUri) // ⚠ nom exact de la colonne
-            put("date_added", product.dateAdded) // ⚠ nom exact de la colonne
+            put("date_added", now) // ⚠ nom exact de la colonne
         }
         val result = db.insert(TABLE_PRODUCTS, null, values)
         return result != -1L

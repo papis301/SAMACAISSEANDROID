@@ -43,7 +43,7 @@ public class AdminInterfaceActivity extends AppCompatActivity {
         btnProducts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(AdminInterfaceActivity.this, ProductManagementActivity.class));
+                startActivity(new Intent(AdminInterfaceActivity.this, ManageProductsActivity.class));
             }
         });
 
