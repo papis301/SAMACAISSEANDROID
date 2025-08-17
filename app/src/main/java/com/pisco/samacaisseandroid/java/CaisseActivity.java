@@ -6,14 +6,22 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.pisco.samacaisseandroid.AppDbHelper;
+import com.pisco.samacaisseandroid.MainActivity;
 import com.pisco.samacaisseandroid.R;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.widget.SearchView;
+
+
 
 public class CaisseActivity extends AppCompatActivity {
 
@@ -24,6 +32,7 @@ public class CaisseActivity extends AppCompatActivity {
     ArrayList<Product> products = new ArrayList<>();
     ArrayList<CartItem> cart = new ArrayList<>();
     AppDbHelper dbHelper;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +43,21 @@ public class CaisseActivity extends AppCompatActivity {
         listCart = findViewById(R.id.listCart);
         btnValidate = findViewById(R.id.btnValidate);
         dbHelper = new AppDbHelper(this);
+
+         toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Caisse");
+
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_connect_printer) {
+                Toast.makeText(this, "Connexion imprimante...", Toast.LENGTH_SHORT).show();
+                // 👉 Ici tu mets ton code de connexion Bluetooth
+                return true;
+            }
+            return false;
+        });
+
 
         // Charger produits depuis SQLite
         loadProductsFromDb();
@@ -149,5 +173,33 @@ private void saveSale() {
         Toast.makeText(this, "Erreur lors de l'enregistrement de la vente", Toast.LENGTH_SHORT).show();
     }
 }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.caisse_menu, menu);
+
+        // Récupérer SearchView
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+
+        searchView.setQueryHint("Rechercher un produit...");
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                productAdapter.getFilter().filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                productAdapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+
+        return true;
+    }
+
 
 }

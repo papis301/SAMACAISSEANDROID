@@ -6,4 +6,5 @@
     <string name="title_activity_product_management">ProductManagementActivity</string>
     <string name="title_activity_client_management">ClientManagementActivity</string>
     <string name="title_activity_main_nav_host">MainNavHost</string>
+    <string name="connecter_imprimante">Connecter Imprimante</string>
 </resources>

@@ -38,6 +38,7 @@ public class FactureActivity extends AppCompatActivity {
     private Button btnShare, btnPrint;
     private long saleId;
     StringBuilder facturestring ;
+    double total;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +71,7 @@ public class FactureActivity extends AppCompatActivity {
             //printBluetooth(txtFacture.getText().toString());
             Intent intent = new Intent(FactureActivity.this, ImprimerKotlin.class);
             intent.putExtra("lafacture", (CharSequence) facturestring);// écran admin
+            intent.putExtra("total", total);
             startActivity(intent);
             finish();
         });
@@ -200,13 +202,13 @@ public class FactureActivity extends AppCompatActivity {
                     new String[]{String.valueOf(saleId)}
             );
 
-            double total = 0;
+             total = Double.parseDouble(sale.getString(sale.getColumnIndexOrThrow("total")));
             while (items.moveToNext()) {
                 String name = items.getString(items.getColumnIndexOrThrow("name"));
                 int qty = items.getInt(items.getColumnIndexOrThrow("quantity"));
                 double price = items.getDouble(items.getColumnIndexOrThrow("price"));
                 double lineTotal = qty * price; // ✅ calcul du total par ligne
-                total += lineTotal;
+                //total += lineTotal;
 
                 sb.append(name)
                         .append(" x").append(qty)

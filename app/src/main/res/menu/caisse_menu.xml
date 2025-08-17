@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_connect_printer"
+        android:title="Connecter"
+        android:icon="@drawable/ic_bluetooth"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_search"
+        android:title="Rechercher"
+        android:icon="@android:drawable/ic_menu_search"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView" />
+</menu>

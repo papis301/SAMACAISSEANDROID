@@ -63,11 +63,34 @@ class ImprimerKotlin : AppCompatActivity() {
             Toast.makeText(this, "No printer connected", Toast.LENGTH_SHORT).show()
 //            return@setOnClickListener
         }
+//        Thread {
+//            try {
+//                val printer = EscPosPrinter(connection, 203, 48f, 32)
+//                printer.printFormattedText(factureString)
+//                finish()
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//        }.start()
         Thread {
             try {
-                val printer = EscPosPrinter(connection, 203, 48f, 32)
-                printer.printFormattedText(factureString)
-                finish()
+                val printer = EscPosPrinter(printerConnection, 203, 48f, 32)
+                val total = intent.getDoubleExtra("total", 0.0)
+                // Préparer le texte formaté
+                val formattedText = """
+            [C]<b><font size='big'>FACTURE</font></b>
+            ${factureString}
+            [L]------------------------
+            [R]<b>TOTAL : ${total} CFA</b>
+            [C]Merci pour votre achat !
+            [C]Merci!
+        """.trimIndent()
+
+                printer.printFormattedText(formattedText)
+                runOnUiThread {
+                    Toast.makeText(this, "Impression terminée", Toast.LENGTH_SHORT).show()
+                    finish() // ferme l'activité actuelle et retourne à CaisseActivity
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
