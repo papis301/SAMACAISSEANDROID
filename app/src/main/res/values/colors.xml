@@ -2,4 +2,13 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="colorPrimary">#4CAF50</color>        <!-- Vert principal -->
+    <color name="colorPrimaryVariant">#388E3C</color> <!-- Vert foncé -->
+    <color name="colorSecondary">#8BC34A</color>      <!-- Vert clair -->
+
+    <!-- Couleurs complémentaires -->
+    <color name="colorSecondaryVariant">#689F38</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorOnSecondary">#000000</color>
+
 </resources>

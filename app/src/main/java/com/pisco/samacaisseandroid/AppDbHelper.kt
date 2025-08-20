@@ -44,6 +44,8 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
             );
         """)
 
+
+
         db.execSQL("CREATE TABLE user_sessions (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "user_id INTEGER," +
