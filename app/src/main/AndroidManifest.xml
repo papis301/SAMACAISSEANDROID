@@ -21,6 +21,9 @@
         android:theme="@style/Theme.SamaCaisseAndroid"
         tools:targetApi="31">
         <activity
+            android:name=".SupplierListActivity"
+            android:exported="false" />
+        <activity
             android:name=".java.ManageProductsActivity"
             android:exported="false" />
         <activity
@@ -68,7 +71,8 @@
             android:theme="@style/Theme.SamaCaisseAndroid" />
         <activity
             android:name=".UserManagementActivity"
-            android:exported="false" />
+            android:exported="false"
+            tools:ignore="MissingClass" />
         <activity
             android:name=".AdminLoginActivity"
             android:exported="true" />
