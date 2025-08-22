@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.pisco.samacaisseandroid.java.CartItem
+import com.pisco.samacaisseandroid.java.Supplier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -23,6 +24,7 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
         const val TABLE_PRODUCTS = "products"
         const val TABLE_SALES = "sales"
         const val TABLE_SALES_ITEMS = "sales_items"
+        const val TABLE_SUPPLIERS: String = "suppliers"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -47,7 +49,7 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
         db.execSQL("""
         CREATE TABLE purchases (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            Fournisseur TEXT,
+            Supplier TEXT,
             total REAL NOT NULL,
             date TEXT NOT NULL
         )
@@ -114,7 +116,7 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
 
         db.execSQL(
             """
-    CREATE TABLE Fournisseurs (
+    CREATE TABLE Suppliers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         phone TEXT,
@@ -806,7 +808,7 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
 
     fun savePurchaseWithItems(
         items: List<CartItem>,   // Les articles achetés (comme pour le panier)
-        Fournisseur: String? = null // Fournisseur optionnel
+        Supplier: String? = null // Supplier optionnel
     ): Long {
         val db = writableDatabase
         var purchaseId: Long = -1
@@ -818,7 +820,7 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
 
             // ✅ Insertion dans purchases
             val purchaseValues = ContentValues().apply {
-                put("Fournisseur", Fournisseur)
+                put("Supplier", Supplier)
                 put("total", total)
                 put("date", SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date()))
             }
@@ -851,53 +853,53 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
         return purchaseId
     }
 
-    // Ajouter un fournisseur
-    fun addFournisseur(name: String, phone: String?, address: String?): Long {
+    // Ajouter un Supplier
+    fun addSupplier(name: String, phone: String?, address: String?): Long {
         val db = writableDatabase
         val values = ContentValues().apply {
             put("name", name)
             put("phone", phone)
             put("address", address)
         }
-        return db.insert("Fournisseurs", null, values)
+        return db.insert("Suppliers", null, values)
     }
 
-    // Récupérer tous les fournisseurs
-    fun getAllFournisseurs(): List<Fournisseur> {
-        val list = mutableListOf<Fournisseur>()
-        val db = readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM Fournisseurs", null)
+    // Récupérer tous les Suppliers
+    fun getAllSuppliers(): MutableList<Supplier> {
+        val suppliers = mutableListOf<Supplier>()
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_SUPPLIERS", null)
+
         if (cursor.moveToFirst()) {
             do {
-                list.add(
-                    Fournisseur(
-                        id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
-                        name = cursor.getString(cursor.getColumnIndexOrThrow("name")),
-                        phone = cursor.getString(cursor.getColumnIndexOrThrow("phone")),
-                        address = cursor.getString(cursor.getColumnIndexOrThrow("address"))
-                    )
+                val supplier = Supplier(
+                    cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("name")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("phone")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("address"))
                 )
+                suppliers.add(supplier)
             } while (cursor.moveToNext())
         }
         cursor.close()
-        return list
+        return suppliers
     }
 
-    // Modifier un fournisseur
-    fun updateFournisseur(id: Int, name: String, phone: String?, address: String?): Int {
+    // Modifier un Supplier
+    fun updateSupplier(id: Int, name: String, phone: String?, address: String?): Int {
         val db = writableDatabase
         val values = ContentValues().apply {
             put("name", name)
             put("phone", phone)
             put("address", address)
         }
-        return db.update("Fournisseurs", values, "id=?", arrayOf(id.toString()))
+        return db.update("Suppliers", values, "id=?", arrayOf(id.toString()))
     }
 
-    // Supprimer un fournisseur
-    fun deleteFournisseur(id: Int): Int {
+    // Supprimer un Supplier
+    fun deleteSupplier(id: Int): Int {
         val db = writableDatabase
-        return db.delete("Fournisseurs", "id=?", arrayOf(id.toString()))
+        return db.delete("Suppliers", "id=?", arrayOf(id.toString()))
     }
 
 
