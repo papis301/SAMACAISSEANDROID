@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Spinner pour filtrer par période -->
+    <Spinner
+        android:id="@+id/spinnerFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Titre Achats -->
+    <TextView
+        android:id="@+id/tvPurchasesTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Achats"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:layout_marginBottom="8dp" />
+
+    <!-- RecyclerView pour les achats -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvPurchases"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Titre Ventes -->
+    <TextView
+        android:id="@+id/tvSalesTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ventes"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:layout_marginBottom="8dp" />
+
+    <!-- RecyclerView pour les ventes -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSales"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"/>
+</LinearLayout>

@@ -21,6 +21,9 @@
         android:theme="@style/Theme.SamaCaisseAndroid"
         tools:targetApi="31">
         <activity
+            android:name=".java.SalesPurchasesActivity"
+            android:exported="false" />
+        <activity
             android:name=".java.AddCompanyActivity"
             android:exported="false" />
         <activity

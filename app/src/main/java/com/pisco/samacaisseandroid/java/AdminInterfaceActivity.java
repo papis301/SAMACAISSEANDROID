@@ -19,7 +19,8 @@ import com.pisco.samacaisseandroid.ui.ClientManagementActivity;
 
 public class AdminInterfaceActivity extends AppCompatActivity {
 
-    Button btnUsers, btnProducts, btnClients, btnLogout, btnHistory, btnfour, btnachat;
+    Button btnUsers, btnProducts, btnClients, btnLogout, btnHistory, btnfour,
+            btnachat, btncompta;
     private AppDbHelper dbHelper;
     TextView tvCompanyName, tvCompanyAddress, tvCompanyPhone;
 
@@ -42,6 +43,7 @@ public class AdminInterfaceActivity extends AppCompatActivity {
         btnLogout = findViewById(R.id.btnLogout);
         btnfour = findViewById(R.id.btnfournisseu);
         btnachat = findViewById(R.id.btnachats);
+        btncompta = findViewById(R.id.compta);
 
         // Vérifier si l'entreprise existe
         Cursor cursor = dbHelper.getReadableDatabase()
@@ -78,6 +80,9 @@ public class AdminInterfaceActivity extends AppCompatActivity {
             tvCompanyAddress.setText("");
             tvCompanyPhone.setText("");
         }
+
+        btncompta.setOnClickListener(v -> startActivity(new Intent(AdminInterfaceActivity.this, SalesPurchasesActivity.class)));
+
 
         // Redirection vers Gestion achats
         btnachat.setOnClickListener(v -> startActivity(new Intent(AdminInterfaceActivity.this, AchatsListeActivity.class)));

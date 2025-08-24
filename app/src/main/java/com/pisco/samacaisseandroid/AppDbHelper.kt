@@ -1,6 +1,5 @@
 package com.pisco.samacaisseandroid
 
-import ads_mobile_sdk.db
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -975,5 +974,73 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
         val db = this.readableDatabase
         return db.rawQuery("SELECT id, name, address, phone FROM company LIMIT 1", null)
     }
+
+    fun getPurchasesFiltered(startDate: String?): MutableList<Achat?> {
+        val list: MutableList<Achat?> = ArrayList<Achat?>()
+        val db = getReadableDatabase()
+        val cursor: Cursor?
+
+        var query =
+            "SELECT a.id, s.name AS supplierName, p.name AS productName, a.quantity, a.price, a.date " +
+                    "FROM achats a " +
+                    "JOIN suppliers s ON a.supplierId = s.id " +
+                    "JOIN products p ON a.productId = p.id "
+
+        if (startDate != null) {
+            query += "WHERE date(a.date) >= date(?) "
+            query += "ORDER BY a.date DESC"
+            cursor = db.rawQuery(query, arrayOf<String>(startDate))
+        } else {
+            query += "ORDER BY a.date DESC"
+            cursor = db.rawQuery(query, null)
+        }
+
+        if (cursor.moveToFirst()) {
+            do {
+                list.add(
+                    Achat(
+                        cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("supplierName")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("productName")),
+                        cursor.getInt(cursor.getColumnIndexOrThrow("quantity")),
+                        cursor.getDouble(cursor.getColumnIndexOrThrow("price")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("date"))
+                    )
+                )
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return list
+    }
+
+    fun getSalesFiltered(startDate: String?): MutableList<Sale?> {
+        val list: MutableList<Sale?> = ArrayList<Sale?>()
+        val db = getReadableDatabase()
+        val cursor: Cursor?
+
+        var query = "SELECT * FROM sales "
+        if (startDate != null) {
+            query += "WHERE date(date) >= date(?) ORDER BY date DESC"
+            cursor = db.rawQuery(query, arrayOf<String>(startDate))
+        } else {
+            query += "ORDER BY date DESC"
+            cursor = db.rawQuery(query, null)
+        }
+
+        if (cursor.moveToFirst()) {
+            do {
+                list.add(
+                    Sale(
+                        cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("date")),
+                        cursor.getDouble(cursor.getColumnIndexOrThrow("total"))
+                    )
+                )
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return list
+    }
+
 
 }
