@@ -9,12 +9,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.pisco.samacaisseandroid.AppDbHelper;
 import com.pisco.samacaisseandroid.R;
@@ -22,7 +18,7 @@ import com.pisco.samacaisseandroid.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SupplierListActivity extends AppCompatActivity {
+public class FournisseurListActivity extends AppCompatActivity {
 
     private AppDbHelper dbHelper;
     private ListView listView;
@@ -54,13 +50,10 @@ public class SupplierListActivity extends AppCompatActivity {
 
     private void loadSuppliers() {
         suppliers = dbHelper.getAllSuppliers();
-        List<String> supplierNames = new ArrayList<>();
-        for (Supplier s : suppliers) {
-            supplierNames.add(s.getName());
-        }
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, supplierNames);
+        FournisseurAdapter adapter = new FournisseurAdapter(this, suppliers);
         listView.setAdapter(adapter);
     }
+
 
     private void showSupplierDialog(Supplier supplier) {
         LayoutInflater inflater = getLayoutInflater();

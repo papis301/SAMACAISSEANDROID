@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <!-- Sélection Fournisseur -->
+        <Spinner
+            android:id="@+id/spSupplier"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fournisseur" />
+
+        <!-- Sélection Produit -->
+        <Spinner
+            android:id="@+id/spProduct"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="produit" />
+
+        <!-- Quantité -->
+        <EditText
+            android:id="@+id/etQuantity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Quantité"
+            android:inputType="number" />
+
+        <!-- Prix -->
+        <EditText
+            android:id="@+id/etPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Prix unitaire"
+            android:inputType="numberDecimal" />
+
+        <!-- Date -->
+        <EditText
+            android:id="@+id/etDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Date (AAAA-MM-JJ)"
+            android:inputType="datetime" />
+
+        <!-- Bouton Enregistrer -->
+        <Button
+            android:id="@+id/btnSavePurchase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enregistrer l'achat" />
+
+    </LinearLayout>
+</ScrollView>

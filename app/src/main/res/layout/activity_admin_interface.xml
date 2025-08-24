@@ -8,6 +8,19 @@
     android:background="@android:color/white">
 
     <Button
+        android:id="@+id/btnfournisseu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Gestion Fournisseurs"
+        android:layout_marginBottom="16dp" />
+    <Button
+        android:id="@+id/btnachats"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Gestion Achats"
+        android:layout_marginBottom="16dp" />
+
+    <Button
         android:id="@+id/btnUsers"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

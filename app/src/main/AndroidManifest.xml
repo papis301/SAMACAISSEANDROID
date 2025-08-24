@@ -21,8 +21,15 @@
         android:theme="@style/Theme.SamaCaisseAndroid"
         tools:targetApi="31">
         <activity
-            android:name=".SupplierListActivity"
+            android:name=".java.AchatsListeActivity"
             android:exported="false" />
+        <activity
+            android:name=".java.AchatFormActivity"
+            android:exported="false" />
+        <activity
+            android:name=".java.FournisseurListActivity"
+            android:exported="false"
+            tools:ignore="MissingClass" />
         <activity
             android:name=".java.ManageProductsActivity"
             android:exported="false" />

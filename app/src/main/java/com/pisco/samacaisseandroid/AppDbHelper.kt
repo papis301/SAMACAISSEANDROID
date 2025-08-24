@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.pisco.samacaisseandroid.java.Achat
 import com.pisco.samacaisseandroid.java.CartItem
 import com.pisco.samacaisseandroid.java.Supplier
 import kotlinx.coroutines.Dispatchers
@@ -46,14 +47,20 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
             );
         """)
 
-        db.execSQL("""
-        CREATE TABLE purchases (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            Supplier TEXT,
-            total REAL NOT NULL,
-            date TEXT NOT NULL
-        )
-    """)
+
+
+        // Dans onCreate(SQLiteDatabase db)
+        db.execSQL("CREATE TABLE achats (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "supplierId INTEGER, " +
+                "productId INTEGER, " +   // référence au produit
+                "quantity INTEGER, " +
+                "price REAL, " +
+                "date TEXT, " +
+                "FOREIGN KEY(supplierId) REFERENCES suppliers(id), " +
+                "FOREIGN KEY(productId) REFERENCES products(id))");
+
+
 
         db.execSQL("""
         CREATE TABLE purchase_items (
@@ -824,7 +831,7 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
                 put("total", total)
                 put("date", SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date()))
             }
-            purchaseId = db.insert("purchases", null, purchaseValues)
+            purchaseId = db.insert("achats", null, purchaseValues)
 
             // ✅ Insertion dans purchase_items + mise à jour du stock
             for (item in items) {
@@ -900,6 +907,49 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
     fun deleteSupplier(id: Int): Int {
         val db = writableDatabase
         return db.delete("Suppliers", "id=?", arrayOf(id.toString()))
+    }
+
+    fun addPurchase(supplierId: Int, productId: Int, quantity: Int, price: Double, date: String?) {
+        val db = this.getWritableDatabase()
+        val values = ContentValues()
+        values.put("supplierId", supplierId)
+        values.put("productId", productId)
+        values.put("quantity", quantity)
+        values.put("price", price)
+        values.put("date", date)
+
+        db.insert("achats", null, values)
+        db.close()
+    }
+
+    fun getAllPurchases(): MutableList<Achat?> {
+        val purchases: MutableList<Achat?> = ArrayList<Achat?>()
+        val db = this.getReadableDatabase()
+
+        val query = "SELECT p.id, s.name AS supplierName, pr.name AS productName, " +
+                "p.quantity, p.price, p.date " +
+                "FROM achats p " +
+                "JOIN suppliers s ON p.supplierId = s.id " +
+                "JOIN products pr ON p.productId = pr.id"
+
+        val cursor = db.rawQuery(query, null)
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+                val supplierName = cursor.getString(cursor.getColumnIndexOrThrow("supplierName"))
+                val productName = cursor.getString(cursor.getColumnIndexOrThrow("productName"))
+                val quantity = cursor.getInt(cursor.getColumnIndexOrThrow("quantity"))
+                val price = cursor.getDouble(cursor.getColumnIndexOrThrow("price"))
+                val date = cursor.getString(cursor.getColumnIndexOrThrow("date"))
+
+                purchases.add(Achat(id, supplierName, productName, quantity, price, date))
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+        return purchases
     }
 
 

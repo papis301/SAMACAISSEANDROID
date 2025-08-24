@@ -17,7 +17,7 @@ import com.pisco.samacaisseandroid.ui.ClientManagementActivity;
 
 public class AdminInterfaceActivity extends AppCompatActivity {
 
-    Button btnUsers, btnProducts, btnClients, btnLogout, btnHistory;
+    Button btnUsers, btnProducts, btnClients, btnLogout, btnHistory, btnfour, btnachat;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -30,6 +30,23 @@ public class AdminInterfaceActivity extends AppCompatActivity {
         btnClients = findViewById(R.id.btnClients);
         btnHistory = findViewById(R.id.historiqueuser);
         btnLogout = findViewById(R.id.btnLogout);
+        btnfour = findViewById(R.id.btnfournisseu);
+        btnachat = findViewById(R.id.btnachats);
+
+        // Redirection vers Gestion achats
+        btnachat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(AdminInterfaceActivity.this, AchatsListeActivity.class));
+            }
+        });
+        // Redirection vers Gestion fournisseurs
+        btnfour.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(AdminInterfaceActivity.this, FournisseurListActivity.class));
+            }
+        });
 
         // Redirection vers Gestion Utilisateurs
         btnUsers.setOnClickListener(new View.OnClickListener() {

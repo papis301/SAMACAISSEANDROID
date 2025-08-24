@@ -1,5 +1,5 @@
 [versions]
-agp = "8.9.0"
+agp = "8.10.1"
 coilCompose = "2.7.0"
 escposThermalprinterAndroid = "3.4.0"
 kotlin = "2.0.21"
