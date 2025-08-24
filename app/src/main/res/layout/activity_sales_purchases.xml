@@ -5,6 +5,25 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Totaux -->
+    <TextView
+        android:id="@+id/tvTotalPurchases"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Total Achats : 0"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/tvTotalSales"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Total Ventes : 0"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp" />
+
     <!-- Spinner pour filtrer par période -->
     <Spinner
         android:id="@+id/spinnerFilter"
@@ -22,7 +41,6 @@
         android:textSize="18sp"
         android:layout_marginBottom="8dp" />
 
-    <!-- RecyclerView pour les achats -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPurchases"
         android:layout_width="match_parent"
@@ -39,7 +57,6 @@
         android:textSize="18sp"
         android:layout_marginBottom="8dp" />
 
-    <!-- RecyclerView pour les ventes -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSales"
         android:layout_width="match_parent"

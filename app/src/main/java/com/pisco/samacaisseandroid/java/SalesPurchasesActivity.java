@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,6 +24,7 @@ public class SalesPurchasesActivity extends AppCompatActivity {
     private AppDbHelper dbHelper;
     private RecyclerView rvPurchases, rvSales;
     private Spinner spinnerFilter;
+    private TextView tvTotalPurchases, tvTotalSales;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,8 @@ public class SalesPurchasesActivity extends AppCompatActivity {
         rvPurchases = findViewById(R.id.rvPurchases);
         rvSales = findViewById(R.id.rvSales);
         spinnerFilter = findViewById(R.id.spinnerFilter);
+        tvTotalPurchases = findViewById(R.id.tvTotalPurchases);
+        tvTotalSales = findViewById(R.id.tvTotalSales);
 
         rvPurchases.setLayoutManager(new LinearLayoutManager(this));
         rvSales.setLayoutManager(new LinearLayoutManager(this));
@@ -81,9 +85,23 @@ public class SalesPurchasesActivity extends AppCompatActivity {
         PurchaseAdapter purchaseAdapter = new PurchaseAdapter(purchases);
         rvPurchases.setAdapter(purchaseAdapter);
 
+        // Calcul total achats
+        double totalPurchases = 0;
+        for (Achat a : purchases) {
+            totalPurchases += a.getPrice() * a.getQuantity();
+        }
+        tvTotalPurchases.setText("Total Achats : " + totalPurchases);
+
         // Charger ventes
         List<AppDbHelper.Sale> sales = dbHelper.getSalesFiltered(startDate);
         SaleAdapter saleAdapter = new SaleAdapter(sales);
         rvSales.setAdapter(saleAdapter);
+
+        // Calcul total ventes
+        double totalSales = 0;
+        for (AppDbHelper.Sale s : sales) {
+            totalSales += s.getTotal();
+        }
+        tvTotalSales.setText("Total Ventes : " + totalSales);
     }
 }
