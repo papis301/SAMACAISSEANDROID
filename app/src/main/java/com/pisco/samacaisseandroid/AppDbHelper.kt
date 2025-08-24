@@ -1,7 +1,9 @@
 package com.pisco.samacaisseandroid
 
+import ads_mobile_sdk.db
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.pisco.samacaisseandroid.java.Achat
@@ -108,6 +110,16 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
             );
         """)
 
+        // Table company
+        db.execSQL("""
+        CREATE TABLE IF NOT EXISTS company (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            address TEXT,
+            phone TEXT
+        );
+    """)
+
         // Détail des items d'une vente
         db.execSQL("""
             CREATE TABLE $TABLE_SALES_ITEMS (
@@ -120,6 +132,7 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
                 FOREIGN KEY(product_id) REFERENCES $TABLE_PRODUCTS(id)
             );
         """)
+
 
         db.execSQL(
             """
@@ -922,6 +935,12 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
         db.close()
     }
 
+    fun rawQuery(query: String, selectionArgs: Array<String>? = null): Cursor {
+        val db = this.readableDatabase
+        return db.rawQuery(query, selectionArgs)
+    }
+
+
     fun getAllPurchases(): MutableList<Achat?> {
         val purchases: MutableList<Achat?> = ArrayList<Achat?>()
         val db = this.getReadableDatabase()
@@ -952,5 +971,9 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, n
         return purchases
     }
 
+    fun getCompany(): Cursor {
+        val db = this.readableDatabase
+        return db.rawQuery("SELECT id, name, address, phone FROM company LIMIT 1", null)
+    }
 
 }

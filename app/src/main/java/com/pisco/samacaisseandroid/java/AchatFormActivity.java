@@ -1,9 +1,13 @@
 package com.pisco.samacaisseandroid.java;
 
+import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -17,7 +21,9 @@ import com.pisco.samacaisseandroid.R;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class AchatFormActivity extends AppCompatActivity {
 
@@ -42,6 +48,32 @@ public class AchatFormActivity extends AppCompatActivity {
         etPrice = findViewById(R.id.etPrice);
         etDate = findViewById(R.id.etDate);
         btnSavePurchase = findViewById(R.id.btnSavePurchase);
+
+// Bloquer le clavier
+        etDate.setInputType(InputType.TYPE_NULL);
+
+// Afficher le DatePickerDialog au clic
+        etDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog datePickerDialog = new DatePickerDialog(AchatFormActivity.this,
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
+                                // Format AAAA-MM-JJ
+                                String date = String.format(Locale.getDefault(), "%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
+                                etDate.setText(date);
+                            }
+                        }, year, month, day);
+                datePickerDialog.show();
+            }
+        });
+
 
         loadSuppliers();
         loadProducts();
@@ -93,6 +125,8 @@ public class AchatFormActivity extends AppCompatActivity {
         dbHelper.addPurchase(supplierId, productId, quantity, price, date);
 
         Toast.makeText(this, "Achat enregistré avec succès", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(AchatFormActivity.this, AchatsListeActivity.class));
+
         finish();
     }
 }

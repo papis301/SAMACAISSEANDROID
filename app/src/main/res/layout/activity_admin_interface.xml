@@ -1,59 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="24dp"
     android:background="@android:color/white">
 
-    <Button
-        android:id="@+id/btnfournisseu"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Gestion Fournisseurs"
-        android:layout_marginBottom="16dp" />
-    <Button
-        android:id="@+id/btnachats"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Gestion Achats"
-        android:layout_marginBottom="16dp" />
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center_horizontal">
 
-    <Button
-        android:id="@+id/btnUsers"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Gestion Utilisateurs"
-        android:layout_marginBottom="16dp" />
+        <!-- Bloc infos entreprise -->
+        <LinearLayout
+            android:id="@+id/companyInfoLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="@android:color/darker_gray"
+            android:layout_marginBottom="24dp">
 
-    <Button
-        android:id="@+id/btnProducts"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Gestion Produits"
-        android:layout_marginBottom="16dp" />
+            <TextView
+                android:id="@+id/tvCompanyName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nom entreprise"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:layout_marginBottom="4dp" />
 
-    <Button
-        android:id="@+id/btnClients"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Gestion Clients"
-        android:layout_marginBottom="16dp" />
+            <TextView
+                android:id="@+id/tvCompanyAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Adresse"
+                android:textSize="14sp"
+                android:textColor="@android:color/black"
+                android:layout_marginBottom="2dp" />
 
-    <Button
-        android:id="@+id/historiqueuser"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Historiques des connexions"
-        android:layout_marginBottom="16dp" />
+            <TextView
+                android:id="@+id/tvCompanyPhone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Téléphone"
+                android:textSize="14sp"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
 
-    <Button
-        android:id="@+id/btnLogout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Déconnexion"
-        android:backgroundTint="@android:color/holo_red_dark"
-        android:textColor="@android:color/white" />
+        <!-- Boutons existants -->
+        <Button
+            android:id="@+id/btnfournisseu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Gestion Fournisseurs"
+            android:layout_marginBottom="16dp" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/btnachats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Gestion Achats"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnUsers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Gestion Utilisateurs de l'application"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnProducts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Gestion Produits"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnClients"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Gestion Clients"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/historiqueuser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Historiques des connexions"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Déconnexion"
+            android:backgroundTint="@android:color/holo_red_dark"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+</ScrollView>

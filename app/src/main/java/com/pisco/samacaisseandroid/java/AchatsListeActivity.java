@@ -36,6 +36,7 @@ public class AchatsListeActivity extends AppCompatActivity {
         fabAddPurchase.setOnClickListener(v -> {
             Intent intent = new Intent(AchatsListeActivity.this, AchatFormActivity.class);
             startActivity(intent);
+            finish();
         });
     }
 }
