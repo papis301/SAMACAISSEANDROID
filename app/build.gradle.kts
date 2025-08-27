@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -57,6 +58,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.ads.mobile.sdk)
     implementation(libs.androidx.navigation.runtime.android)
+    implementation(libs.firebase.firestore)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -67,5 +69,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.coil.compose)
     implementation (libs.androidx.navigation.compose)
+    implementation platform("com.google.firebase:firebase-bom:33.5.1") // dernier BOM
+    implementation (com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-analytics'
 
 }

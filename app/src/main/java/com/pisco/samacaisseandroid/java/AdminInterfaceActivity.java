@@ -11,17 +11,26 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.pisco.samacaisseandroid.AppDbHelper;
 import com.pisco.samacaisseandroid.R;
 import com.pisco.samacaisseandroid.UserHistoryActivity;
 import com.pisco.samacaisseandroid.UserManagementActivity;
 import com.pisco.samacaisseandroid.ui.ClientManagementActivity;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
 public class AdminInterfaceActivity extends AppCompatActivity {
 
     Button btnUsers, btnProducts, btnClients, btnLogout, btnHistory, btnfour,
-            btnachat, btncompta;
+            btnachat, btncompta, btnSubscribe;
     private AppDbHelper dbHelper;
+    private FirebaseFirestore db;
+    private String tel;
     TextView tvCompanyName, tvCompanyAddress, tvCompanyPhone;
 
     @SuppressLint("MissingInflatedId")
@@ -44,6 +53,11 @@ public class AdminInterfaceActivity extends AppCompatActivity {
         btnfour = findViewById(R.id.btnfournisseu);
         btnachat = findViewById(R.id.btnachats);
         btncompta = findViewById(R.id.compta);
+        btnSubscribe = findViewById(R.id.btnSubscribe);
+
+        db = FirebaseFirestore.getInstance();
+
+        btnSubscribe.setOnClickListener(v -> saveSubscription());
 
         // Vérifier si l'entreprise existe
         Cursor cursor = dbHelper.getReadableDatabase()
@@ -71,6 +85,8 @@ public class AdminInterfaceActivity extends AppCompatActivity {
             String name = cursor1.getString(cursor1.getColumnIndexOrThrow("name"));
             String address = cursor1.getString(cursor1.getColumnIndexOrThrow("address"));
             String phone = cursor1.getString(cursor1.getColumnIndexOrThrow("phone"));
+
+            tel = phone;
 
             tvCompanyName.setText(name);
             tvCompanyAddress.setText("Adresse : " + address);
@@ -109,5 +125,32 @@ public class AdminInterfaceActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
+    }
+
+    private void saveSubscription() {
+        if (tel == null || tel.trim().isEmpty()) {
+            Toast.makeText(this, "⚠️ Impossible d’enregistrer : numéro de téléphone admin vide.", Toast.LENGTH_LONG).show();
+            return; // Stop exécution
+        }
+        // Obtenir mois & année actuels
+        String currentMonth = new SimpleDateFormat("MM", Locale.getDefault()).format(new Date());
+        String currentYear = new SimpleDateFormat("yyyy", Locale.getDefault()).format(new Date());
+
+        // Préparer les données du paiement
+        Map<String, Object> paiement = new HashMap<>();
+        paiement.put("userId", tel);
+        paiement.put("mois", currentMonth);
+        paiement.put("annee", currentYear);
+        paiement.put("status", true);
+
+        // Enregistrer dans Firestore
+        db.collection("paiements")
+                .add(paiement)
+                .addOnSuccessListener(documentReference -> {
+                    Toast.makeText(AdminInterfaceActivity.this, "Abonnement enregistré ✅", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(AdminInterfaceActivity.this, "Erreur : " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
     }
 }
