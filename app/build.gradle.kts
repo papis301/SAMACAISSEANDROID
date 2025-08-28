@@ -1,15 +1,13 @@
-import org.apache.tools.ant.util.JavaEnvUtils.VERSION_11
-
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.google.gms.google.services)
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
+
 }
 
 android {
     namespace = "com.pisco.samacaisseandroid"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.pisco.samacaisseandroid"
@@ -69,8 +67,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.coil.compose)
     implementation (libs.androidx.navigation.compose)
-    implementation platform("com.google.firebase:firebase-bom:33.5.1") // dernier BOM
-    implementation (com.google.firebase:firebase-firestore'
-    implementation 'com.google.firebase:firebase-analytics'
 
 }
