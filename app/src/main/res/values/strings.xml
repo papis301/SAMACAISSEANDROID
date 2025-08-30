@@ -8,6 +8,7 @@
     <string name="title_activity_main_nav_host">MainNavHost</string>
     <string name="connecter_imprimante">Connecter Imprimante</string>
     <string name="title_activity_user_history">UserHistoryActivity</string>
+    <string name="default_web_client_id">google</string>
 
     <string-array name="filter_options">
         <item>Tous</item>
