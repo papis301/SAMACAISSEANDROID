@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.pisco.samacaisseandroid.AppDbHelper;
 import com.pisco.samacaisseandroid.R;
@@ -30,8 +32,9 @@ public class AdminInterfaceActivity extends AppCompatActivity {
             btnachat, btncompta, btnSubscribe;
     private AppDbHelper dbHelper;
     private FirebaseFirestore db;
-    private String tel;
+    private String tel, nomentreprise, adresse;
     TextView tvCompanyName, tvCompanyAddress, tvCompanyPhone;
+    //FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -54,7 +57,7 @@ public class AdminInterfaceActivity extends AppCompatActivity {
         btnachat = findViewById(R.id.btnachats);
         btncompta = findViewById(R.id.compta);
         btnSubscribe = findViewById(R.id.btnSubscribe);
-
+        FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();
 
         btnSubscribe.setOnClickListener(v -> saveSubscription());
@@ -87,6 +90,8 @@ public class AdminInterfaceActivity extends AppCompatActivity {
             String phone = cursor1.getString(cursor1.getColumnIndexOrThrow("phone"));
 
             tel = phone;
+            nomentreprise = name;
+            adresse = address;
 
             tvCompanyName.setText(name);
             tvCompanyAddress.setText("Adresse : " + address);
@@ -151,6 +156,7 @@ public class AdminInterfaceActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(AdminInterfaceActivity.this, "Erreur : " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Log.d("erreur firebase",e.getMessage());
                 });
     }
 }

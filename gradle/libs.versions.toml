@@ -2,8 +2,10 @@
 agp = "8.9.3"
 coilCompose = "2.7.0"
 escposThermalprinterAndroid = "3.4.0"
+firebaseAdmin = "1.32.0"
 firebaseBom = "34.1.0"
 firebaseBomVersion = "33.1.2"
+googleFirebaseBom = "34.2.0"
 kotlin = "2.0.21"
 coreKtx = "1.17.0"
 junit = "4.13.2"
@@ -26,12 +28,17 @@ firebaseFirestore = "26.0.0"
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+com-google-firebase-firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
 escpos-thermalprinter-android = { module = "com.github.DantSu:ESCPOS-ThermalPrinter-Android", version.ref = "escposThermalprinterAndroid" }
+firebase-admin = { module = "com.google.firebase:firebase-admin", version.ref = "firebaseAdmin" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-analytics-ktx = { module = "com.google.firebase:firebase-analytics-ktx" }
+firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-bom-v3312 = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }
+firebase-bom-v3420 = { module = "com.google.firebase:firebase-bom", version.ref = "googleFirebaseBom" }
 firebase-firestore-ktx = { module = "com.google.firebase:firebase-firestore-ktx" }
+google-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 google-firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("com.google.gms.google-services")
 
 }
 
@@ -41,7 +42,7 @@ android {
 }
 
 dependencies {
-
+    // AndroidX et Compose
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -54,18 +55,28 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.ads.mobile.sdk)
     implementation(libs.androidx.navigation.runtime.android)
-    implementation(libs.firebase.firestore)
+    implementation(libs.androidx.navigation.compose)
+
+    // Librairies externes
+    implementation(libs.ads.mobile.sdk)
+    implementation(libs.escpos.thermalprinter.android)
+    implementation(libs.coil.compose)
+
+    // Firebase BoM
+    implementation(platform(libs.firebase.bom.v3420))
+
+    // Firebase SDKs (sans version, car gérés par la BoM)
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
+
+    // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation (libs.escpos.thermalprinter.android)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation(libs.coil.compose)
-    implementation (libs.androidx.navigation.compose)
-
 }
