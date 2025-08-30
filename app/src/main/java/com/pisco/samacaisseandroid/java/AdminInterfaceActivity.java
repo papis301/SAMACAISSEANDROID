@@ -95,6 +95,12 @@ public class AdminInterfaceActivity extends AppCompatActivity {
         });
 
 
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (currentUser != null) {
+            checkIfUserSubscribed(currentUser, btnSubscribe);
+        }
+
         //btnSubscribe.setOnClickListener(v -> saveSubscription(user));
 
         // Vérifier si l'entreprise existe
@@ -237,6 +243,30 @@ public class AdminInterfaceActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(this, "Échec connexion Firebase", Toast.LENGTH_LONG).show();
                     }
+                });
+    }
+
+    private void checkIfUserSubscribed(FirebaseUser user, Button btnSAbonner) {
+        if (user == null) return;
+
+        String email = user.getEmail();
+
+        db.collection("paiements")
+                .whereEqualTo("email", email) // 🔍 Vérifie si l'email existe déjà
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        // ✅ L'utilisateur existe déjà → on grise le bouton
+                        btnSAbonner.setEnabled(false);
+                        btnSAbonner.setText("Déjà abonné");
+                    } else {
+                        // ✅ Pas encore abonné → bouton actif
+                        btnSAbonner.setEnabled(true);
+                        btnSAbonner.setText("S’abonner");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Erreur Firestore : " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
     }
 
