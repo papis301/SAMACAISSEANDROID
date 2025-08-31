@@ -259,6 +259,8 @@ public class AdminInterfaceActivity extends AppCompatActivity {
                         // ✅ L'utilisateur existe déjà → on grise le bouton
                         btnSAbonner.setEnabled(false);
                         btnSAbonner.setText("Déjà abonné");
+
+                        updateAdminButtons(true);
                     } else {
                         // ✅ Pas encore abonné → bouton actif
                         btnSAbonner.setEnabled(true);
@@ -269,6 +271,14 @@ public class AdminInterfaceActivity extends AppCompatActivity {
                     Toast.makeText(this, "Erreur Firestore : " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
     }
+
+    private void updateAdminButtons(boolean isSubscribed) {
+        btnHistory.setEnabled(isSubscribed);
+        btnfour.setEnabled(isSubscribed);
+        btnachat.setEnabled(isSubscribed);
+        btncompta.setEnabled(isSubscribed);
+    }
+
 
 
 }
