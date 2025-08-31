@@ -183,6 +183,83 @@ public class FactureActivity extends AppCompatActivity {
 
 
 
+    private void showFacture(long saleId) {
+        SQLiteDatabase db = AppDbHelper.getReadableDatabase();
+        StringBuilder sb = new StringBuilder();
+
+        // 🔹 Récupérer infos entreprise depuis la table company
+        Cursor companyCursor = db.rawQuery("SELECT name, address, phone FROM company LIMIT 1", null);
+        if (companyCursor != null && companyCursor.moveToFirst()) {
+            String companyName = companyCursor.getString(companyCursor.getColumnIndexOrThrow("name"));
+            String companyAddress = companyCursor.getString(companyCursor.getColumnIndexOrThrow("address"));
+            String companyPhone = companyCursor.getString(companyCursor.getColumnIndexOrThrow("phone"));
+
+            sb.append(companyName).append("\n");
+            sb.append("Adresse: ").append(companyAddress).append("\n");
+            sb.append("Tel: ").append(companyPhone).append("\n");
+            sb.append("=============================\n");
+
+            companyCursor.close();
+        } else {
+            sb.append("Entreprise non définie\n=============================\n");
+        }
+
+        // 🔹 Récupérer la vente
+        Cursor sale = db.rawQuery("SELECT * FROM sales WHERE id=?", new String[]{String.valueOf(saleId)});
+        if (sale.moveToFirst()) {
+            sb.append("FACTURE N°").append(saleId).append("\n");
+            sb.append("Date: ").append(sale.getString(sale.getColumnIndexOrThrow("date"))).append("\n");
+
+            // 🔹 Récupérer le client si existant
+            int clientId = sale.getInt(sale.getColumnIndexOrThrow("client_id"));
+            if (clientId > 0) {
+                Cursor clientCursor = db.rawQuery("SELECT name, phone FROM clients WHERE id=?", new String[]{String.valueOf(clientId)});
+                if (clientCursor.moveToFirst()) {
+                    String clientName = clientCursor.getString(clientCursor.getColumnIndexOrThrow("name"));
+                    String clientPhone = clientCursor.getString(clientCursor.getColumnIndexOrThrow("phone"));
+                    sb.append("Client: ").append(clientName).append(" (").append(clientPhone).append(")\n");
+                }
+                clientCursor.close();
+            } else {
+                sb.append("Client: Aucun\n");
+            }
+
+            sb.append("=============================\n");
+
+            // 🔹 Produits
+            Cursor items = db.rawQuery(
+                    "SELECT si.quantity, si.price, p.name " +
+                            "FROM sales_items si " +
+                            "JOIN products p ON si.product_id = p.id " +
+                            "WHERE si.sale_id=?",
+                    new String[]{String.valueOf(saleId)}
+            );
+
+            double total = Double.parseDouble(sale.getString(sale.getColumnIndexOrThrow("total")));
+            while (items.moveToNext()) {
+                String name = items.getString(items.getColumnIndexOrThrow("name"));
+                double qty = items.getDouble(items.getColumnIndexOrThrow("quantity"));
+                double price = items.getDouble(items.getColumnIndexOrThrow("price"));
+                double lineTotal = qty * price;
+
+                sb.append(name)
+                        .append(" x").append(qty)
+                        .append(" @ ").append(price)
+                        .append(" = ").append(lineTotal)
+                        .append(" CFA\n");
+            }
+            items.close();
+
+            sb.append("=============================\n");
+            sb.append("TOTAL: ").append(sale.getString(sale.getColumnIndexOrThrow("total"))).append(" CFA");
+        }
+        sale.close();
+
+        txtFacture.setText(sb.toString());
+        facturestring = new StringBuilder(sb.toString());
+    }
+
+
 //    private void showFacture(long saleId) {
 //        SQLiteDatabase db = AppDbHelper.getReadableDatabase();
 //        Cursor sale = db.rawQuery("SELECT * FROM sales WHERE id=?", new String[]{String.valueOf(saleId)});
@@ -191,6 +268,21 @@ public class FactureActivity extends AppCompatActivity {
 //        if (sale.moveToFirst()) {
 //            sb.append("FACTURE N°").append(saleId).append("\n");
 //            sb.append("Date: ").append(sale.getString(sale.getColumnIndexOrThrow("date"))).append("\n");
+//
+//            // Récupérer le client si existant
+//            int clientId = sale.getInt(sale.getColumnIndexOrThrow("client_id"));
+//            if (clientId > 0) {
+//                Cursor clientCursor = db.rawQuery("SELECT name, phone FROM clients WHERE id=?", new String[]{String.valueOf(clientId)});
+//                if (clientCursor.moveToFirst()) {
+//                    String clientName = clientCursor.getString(clientCursor.getColumnIndexOrThrow("name"));
+//                    String clientPhone = clientCursor.getString(clientCursor.getColumnIndexOrThrow("phone"));
+//                    sb.append("Client: ").append(clientName).append(" (").append(clientPhone).append(")\n");
+//                }
+//                clientCursor.close();
+//            } else {
+//                sb.append("Client: Aucun\n");
+//            }
+//
 //            sb.append("=================================\n");
 //
 //            // 🔥 Utiliser un JOIN pour récupérer le nom du produit
@@ -202,13 +294,12 @@ public class FactureActivity extends AppCompatActivity {
 //                    new String[]{String.valueOf(saleId)}
 //            );
 //
-//             total = Double.parseDouble(sale.getString(sale.getColumnIndexOrThrow("total")));
+//            total = Double.parseDouble(sale.getString(sale.getColumnIndexOrThrow("total")));
 //            while (items.moveToNext()) {
 //                String name = items.getString(items.getColumnIndexOrThrow("name"));
 //                double qty = items.getDouble(items.getColumnIndexOrThrow("quantity"));
 //                double price = items.getDouble(items.getColumnIndexOrThrow("price"));
-//                double lineTotal = qty * price; // ✅ calcul du total par ligne
-//                //total += lineTotal;
+//                double lineTotal = qty * price;
 //
 //                sb.append(name)
 //                        .append(" x").append(qty)
@@ -226,64 +317,6 @@ public class FactureActivity extends AppCompatActivity {
 //        txtFacture.setText(sb.toString());
 //        facturestring = new StringBuilder(sb.toString());
 //    }
-
-    private void showFacture(long saleId) {
-        SQLiteDatabase db = AppDbHelper.getReadableDatabase();
-        Cursor sale = db.rawQuery("SELECT * FROM sales WHERE id=?", new String[]{String.valueOf(saleId)});
-        StringBuilder sb = new StringBuilder();
-
-        if (sale.moveToFirst()) {
-            sb.append("FACTURE N°").append(saleId).append("\n");
-            sb.append("Date: ").append(sale.getString(sale.getColumnIndexOrThrow("date"))).append("\n");
-
-            // Récupérer le client si existant
-            int clientId = sale.getInt(sale.getColumnIndexOrThrow("client_id"));
-            if (clientId > 0) {
-                Cursor clientCursor = db.rawQuery("SELECT name, phone FROM clients WHERE id=?", new String[]{String.valueOf(clientId)});
-                if (clientCursor.moveToFirst()) {
-                    String clientName = clientCursor.getString(clientCursor.getColumnIndexOrThrow("name"));
-                    String clientPhone = clientCursor.getString(clientCursor.getColumnIndexOrThrow("phone"));
-                    sb.append("Client: ").append(clientName).append(" (").append(clientPhone).append(")\n");
-                }
-                clientCursor.close();
-            } else {
-                sb.append("Client: Aucun\n");
-            }
-
-            sb.append("=================================\n");
-
-            // 🔥 Utiliser un JOIN pour récupérer le nom du produit
-            Cursor items = db.rawQuery(
-                    "SELECT si.quantity, si.price, p.name " +
-                            "FROM sales_items si " +
-                            "JOIN products p ON si.product_id = p.id " +
-                            "WHERE si.sale_id=?",
-                    new String[]{String.valueOf(saleId)}
-            );
-
-            total = Double.parseDouble(sale.getString(sale.getColumnIndexOrThrow("total")));
-            while (items.moveToNext()) {
-                String name = items.getString(items.getColumnIndexOrThrow("name"));
-                double qty = items.getDouble(items.getColumnIndexOrThrow("quantity"));
-                double price = items.getDouble(items.getColumnIndexOrThrow("price"));
-                double lineTotal = qty * price;
-
-                sb.append(name)
-                        .append(" x").append(qty)
-                        .append(" @ ").append(price)
-                        .append(" = ").append(lineTotal)
-                        .append(" CFA\n");
-            }
-            items.close();
-
-            sb.append("=================================\n");
-            sb.append("TOTAL: ").append(sale.getString(sale.getColumnIndexOrThrow("total"))).append(" CFA");
-        }
-        sale.close();
-
-        txtFacture.setText(sb.toString());
-        facturestring = new StringBuilder(sb.toString());
-    }
 
 
 }
