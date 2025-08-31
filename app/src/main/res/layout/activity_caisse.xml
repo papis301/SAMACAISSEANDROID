@@ -4,7 +4,7 @@
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"> <!-- Valeur par défaut -->
+    android:orientation="vertical">
 
     <!-- TopAppBar -->
     <com.google.android.material.appbar.MaterialToolbar
@@ -22,6 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:weightSum="2"
+        android:orientation="horizontal"
         android:padding="8dp">
 
         <!-- Produits -->
@@ -44,6 +45,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </LinearLayout>
+
+        <!-- Barre verticale -->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/darker_gray"
+            android:layout_marginHorizontal="4dp"/>
 
         <!-- Panier -->
         <LinearLayout
@@ -104,6 +112,28 @@
                 android:textSize="18sp"
                 android:gravity="center"
                 android:padding="8dp" />
+
+            <!-- Sélecteur Cash / Crédit -->
+            <RadioGroup
+                android:id="@+id/radioPaymentType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="8dp">
+
+                <RadioButton
+                    android:id="@+id/radioCash"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cash"
+                    android:checked="true"/>
+
+                <RadioButton
+                    android:id="@+id/radioCredit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Crédit"/>
+            </RadioGroup>
 
             <Button
                 android:id="@+id/btnValidate"

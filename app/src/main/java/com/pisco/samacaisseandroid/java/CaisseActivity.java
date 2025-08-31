@@ -46,6 +46,9 @@ public class CaisseActivity extends AppCompatActivity {
     private Integer currentClientId = null; // null si aucun client sélectionné
     private String selectedPaymentType = "cash";
     Button btnSelectClient ;
+    RadioGroup radioPaymentType;
+    RadioButton radioCash, radioCredit;
+
 
 
 
@@ -57,6 +60,11 @@ public class CaisseActivity extends AppCompatActivity {
         LinearLayout rootLayout = findViewById(R.id.container);
         // Toujours horizontal pour la caisse
         rootLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+        radioPaymentType = findViewById(R.id.radioPaymentType);
+        radioCash = findViewById(R.id.radioCash);
+        radioCredit = findViewById(R.id.radioCredit);
+
 
         listProducts = findViewById(R.id.listProducts);
         listCart = findViewById(R.id.listCart);
@@ -298,6 +306,8 @@ private void saveSale() {
         Toast.makeText(this, "Le panier est vide. Ajoutez des produits avant de valider.", Toast.LENGTH_SHORT).show();
         return; // Sortir de la méthode
     }
+
+    selectedPaymentType = radioCash.isChecked() ? "cash" : "credit";
 
     long saleId = dbHelper.saveSaleWithItems(cart, currentClientId, selectedPaymentType);
 

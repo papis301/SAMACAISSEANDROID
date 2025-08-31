@@ -39,6 +39,8 @@ public class FactureActivity extends AppCompatActivity {
     private long saleId;
     StringBuilder facturestring ;
     double total;
+    private String paymentType; // cash ou credit
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -207,8 +209,11 @@ public class FactureActivity extends AppCompatActivity {
         // 🔹 Récupérer la vente
         Cursor sale = db.rawQuery("SELECT * FROM sales WHERE id=?", new String[]{String.valueOf(saleId)});
         if (sale.moveToFirst()) {
+            paymentType = sale.getString(sale.getColumnIndexOrThrow("payment_type")); // récupère cash ou credit
+
             sb.append("FACTURE N°").append(saleId).append("\n");
             sb.append("Date: ").append(sale.getString(sale.getColumnIndexOrThrow("date"))).append("\n");
+            sb.append("Type de paiement: ").append(paymentType.equals("cash") ? "Cash" : "Crédit").append("\n");
 
             // 🔹 Récupérer le client si existant
             int clientId = sale.getInt(sale.getColumnIndexOrThrow("client_id"));
