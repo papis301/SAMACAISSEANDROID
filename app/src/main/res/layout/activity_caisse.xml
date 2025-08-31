@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"> <!-- Valeur par défaut -->
 
     <!-- TopAppBar -->
     <com.google.android.material.appbar.MaterialToolbar
@@ -13,17 +14,17 @@
         android:background="?attr/colorPrimary"
         android:title="Caisse"
         android:titleTextColor="@android:color/white"
-        app:menu="@menu/caisse_menu"/>
+        app:menu="@menu/caisse_menu" />
 
-    <!-- Le reste de ton layout -->
+    <!-- Contenu principal (Produits + Panier) -->
     <LinearLayout
-        android:orientation="horizontal"
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:weightSum="2"
         android:padding="8dp">
 
-        <!-- Liste Produits -->
+        <!-- Produits -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -36,12 +37,12 @@
                 android:text="Produits"
                 android:textStyle="bold"
                 android:textSize="18sp"
-                android:gravity="center"/>
+                android:gravity="center" />
 
             <ListView
                 android:id="@+id/listProducts"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
         </LinearLayout>
 
         <!-- Panier -->
@@ -50,6 +51,7 @@
             android:layout_weight="1"
             android:orientation="vertical"
             android:layout_height="match_parent">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -62,7 +64,7 @@
                     android:layout_height="wrap_content"
                     android:hint="Rechercher un client (nom ou téléphone)"
                     android:inputType="text"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/selectedClient"
@@ -70,28 +72,28 @@
                     android:layout_height="wrap_content"
                     android:text="Aucun client sélectionné"
                     android:textStyle="italic"
-                    android:padding="4dp"/>
+                    android:padding="4dp" />
+
                 <Button
                     android:id="@+id/btnSelectClient"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Choisir Client (facultatif)" />
             </LinearLayout>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Panier"
                 android:textStyle="bold"
                 android:textSize="18sp"
-                android:gravity="center"/>
+                android:gravity="center" />
 
             <ListView
                 android:id="@+id/listCart"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"/>
-
-
+                android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/txtTotal"
@@ -103,12 +105,11 @@
                 android:gravity="center"
                 android:padding="8dp" />
 
-
             <Button
                 android:id="@+id/btnValidate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Valider Facture"/>
+                android:text="Valider Facture" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

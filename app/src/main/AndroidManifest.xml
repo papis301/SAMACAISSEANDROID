@@ -54,7 +54,8 @@
             android:exported="false" />
         <activity
             android:name=".java.CaisseActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="landscape"/>
         <activity
             android:name=".java.AdminInterfaceActivity"
             android:exported="false" />

@@ -54,6 +54,10 @@ public class CaisseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_caisse);
 
+        LinearLayout rootLayout = findViewById(R.id.container);
+        // Toujours horizontal pour la caisse
+        rootLayout.setOrientation(LinearLayout.HORIZONTAL);
+
         listProducts = findViewById(R.id.listProducts);
         listCart = findViewById(R.id.listCart);
         btnValidate = findViewById(R.id.btnValidate);
@@ -290,6 +294,11 @@ public class CaisseActivity extends AppCompatActivity {
 
 
 private void saveSale() {
+    if (cart.isEmpty()) {
+        Toast.makeText(this, "Le panier est vide. Ajoutez des produits avant de valider.", Toast.LENGTH_SHORT).show();
+        return; // Sortir de la méthode
+    }
+
     long saleId = dbHelper.saveSaleWithItems(cart, currentClientId, selectedPaymentType);
 
     if (saleId != -1) {
