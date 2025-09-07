@@ -300,30 +300,60 @@ public class CaisseActivity extends AppCompatActivity {
     }
 
 
+    private void saveSale() {
+        if (cart.isEmpty()) {
+            Toast.makeText(this, "Le panier est vide. Ajoutez des produits avant de valider.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-private void saveSale() {
-    if (cart.isEmpty()) {
-        Toast.makeText(this, "Le panier est vide. Ajoutez des produits avant de valider.", Toast.LENGTH_SHORT).show();
-        return; // Sortir de la méthode
+        selectedPaymentType = radioCash.isChecked() ? "cash" : "credit";
+
+        // ✅ Vérifier qu'on ne fait pas une vente à crédit sans client
+        if (selectedPaymentType.equals("credit") && currentClientId == null) {
+            Toast.makeText(this, "Veuillez sélectionner un client pour une vente à crédit.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        long saleId = dbHelper.saveSaleWithItems(cart, currentClientId, selectedPaymentType);
+
+        if (saleId != -1) {
+            // Afficher facture
+            Intent intent = new Intent(this, FactureActivity.class);
+            intent.putExtra("sale_id", saleId);
+            startActivity(intent);
+
+            // Vider le panier
+            cart.clear();
+            refreshCart();
+        } else {
+            Toast.makeText(this, "Erreur lors de l'enregistrement de la vente", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    selectedPaymentType = radioCash.isChecked() ? "cash" : "credit";
 
-    long saleId = dbHelper.saveSaleWithItems(cart, currentClientId, selectedPaymentType);
-
-    if (saleId != -1) {
-        // Afficher facture
-        Intent intent = new Intent(this, FactureActivity.class);
-        intent.putExtra("sale_id", saleId);
-        startActivity(intent);
-
-        // Vider le panier
-        cart.clear();
-        refreshCart();
-    } else {
-        Toast.makeText(this, "Erreur lors de l'enregistrement de la vente", Toast.LENGTH_SHORT).show();
-    }
-}
+//private void saveSale() {
+//    if (cart.isEmpty()) {
+//        Toast.makeText(this, "Le panier est vide. Ajoutez des produits avant de valider.", Toast.LENGTH_SHORT).show();
+//        return; // Sortir de la méthode
+//    }
+//
+//    selectedPaymentType = radioCash.isChecked() ? "cash" : "credit";
+//
+//    long saleId = dbHelper.saveSaleWithItems(cart, currentClientId, selectedPaymentType);
+//
+//    if (saleId != -1) {
+//        // Afficher facture
+//        Intent intent = new Intent(this, FactureActivity.class);
+//        intent.putExtra("sale_id", saleId);
+//        startActivity(intent);
+//
+//        // Vider le panier
+//        cart.clear();
+//        refreshCart();
+//    } else {
+//        Toast.makeText(this, "Erreur lors de l'enregistrement de la vente", Toast.LENGTH_SHORT).show();
+//    }
+//}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

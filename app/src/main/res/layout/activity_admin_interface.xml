@@ -49,6 +49,34 @@
                 android:textColor="@android:color/white" />
         </LinearLayout>
 
+
+        <Button
+            android:id="@+id/btnUsers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Gestion Utilisateurs de l'application"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnProducts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Gestion Produits"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnClients"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Gestion Clients"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnFacturesCredit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Factures à crédit"
+            android:layout_marginBottom="16dp"/>
         <!-- Boutons existants -->
         <Button
             android:id="@+id/btnSubscribe"
@@ -73,26 +101,6 @@
             android:text="Gestion Achats"
             android:layout_marginBottom="16dp" />
 
-        <Button
-            android:id="@+id/btnUsers"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Gestion Utilisateurs de l'application"
-            android:layout_marginBottom="16dp" />
-
-        <Button
-            android:id="@+id/btnProducts"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Gestion Produits"
-            android:layout_marginBottom="16dp" />
-
-        <Button
-            android:id="@+id/btnClients"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Gestion Clients"
-            android:layout_marginBottom="16dp" />
 
         <Button
             android:id="@+id/compta"

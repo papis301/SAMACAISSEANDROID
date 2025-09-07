@@ -48,6 +48,7 @@ public class AdminInterfaceActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
     FirebaseUser currentUser;
+    Button btnFacturesCredit;
 
 
     @SuppressLint("MissingInflatedId")
@@ -71,6 +72,11 @@ public class AdminInterfaceActivity extends AppCompatActivity {
         btnachat = findViewById(R.id.btnachats);
         btncompta = findViewById(R.id.compta);
         btnSubscribe = findViewById(R.id.btnSubscribe);
+        btnFacturesCredit = findViewById(R.id.btnFacturesCredit);
+        btnFacturesCredit.setOnClickListener(v ->
+                startActivity(new Intent(AdminInterfaceActivity.this, FacturesCreditActivity.class))
+        );
+
         FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();
 
