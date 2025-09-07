@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SamaCaisseAndroid</string>
+    <string name="app_name">Pisco</string>
     <string name="title_activity_admin_auth_screen">AdminAuthScreen</string>
     <string name="title_activity_user_management_screen">UserManagementScreen</string>
     <string name="title_activity_product_management_screen">ProductManagementScreen</string>

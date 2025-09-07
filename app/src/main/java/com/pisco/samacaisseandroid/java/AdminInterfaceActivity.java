@@ -175,37 +175,37 @@ public class AdminInterfaceActivity extends AppCompatActivity {
 
 
 
-    private void saveSubscription(FirebaseUser user) {
-        if (tel == null || tel.trim().isEmpty()) {
-            Toast.makeText(this, "⚠️ Impossible d’enregistrer : numéro de téléphone admin vide.", Toast.LENGTH_LONG).show();
-            return; // Stop exécution
-        }
-        String uid = user.getUid(); // ID unique Firebase Auth
-        String email = user.getEmail();
-
-        String currentMonth = new SimpleDateFormat("MM", Locale.getDefault()).format(new Date());
-        String currentYear = new SimpleDateFormat("yyyy", Locale.getDefault()).format(new Date());
-
-        Map<String, Object> paiement = new HashMap<>();
-        paiement.put("userId", uid);
-        paiement.put("email", email);
-        paiement.put("mois", currentMonth);
-        paiement.put("annee", currentYear);
-        paiement.put("status", true);
-        paiement.put("telephone", tel);
-
-        // 🔥 Ici on force l’ID du document = UID Firebase
-        db.collection("paiements")
-                .document(uid)
-                .set(paiement)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Abonnement enregistré ✅", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Erreur : " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    Log.d("erreur firebase", e.getMessage());
-                });
-    }
+//    private void saveSubscription(FirebaseUser user) {
+//        if (tel == null || tel.trim().isEmpty()) {
+//            Toast.makeText(this, "⚠️ Impossible d’enregistrer : numéro de téléphone admin vide.", Toast.LENGTH_LONG).show();
+//            return; // Stop exécution
+//        }
+//        String uid = user.getUid(); // ID unique Firebase Auth
+//        String email = user.getEmail();
+//
+//        String currentMonth = new SimpleDateFormat("MM", Locale.getDefault()).format(new Date());
+//        String currentYear = new SimpleDateFormat("yyyy", Locale.getDefault()).format(new Date());
+//
+//        Map<String, Object> paiement = new HashMap<>();
+//        paiement.put("userId", uid);
+//        paiement.put("email", email);
+//        paiement.put("mois", currentMonth);
+//        paiement.put("annee", currentYear);
+//        paiement.put("status", true);
+//        paiement.put("telephone", tel);
+//
+//        // 🔥 Ici on force l’ID du document = UID Firebase
+//        db.collection("paiements")
+//                .document(uid)
+//                .set(paiement)
+//                .addOnSuccessListener(aVoid -> {
+//                    Toast.makeText(this, "Abonnement enregistré ✅", Toast.LENGTH_SHORT).show();
+//                })
+//                .addOnFailureListener(e -> {
+//                    Toast.makeText(this, "Erreur : " + e.getMessage(), Toast.LENGTH_LONG).show();
+//                    Log.d("erreur firebase", e.getMessage());
+//                });
+//    }
 
 
     private void signIn() {
@@ -238,7 +238,8 @@ public class AdminInterfaceActivity extends AppCompatActivity {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
                             Toast.makeText(this, "Connecté : " + user.getEmail(), Toast.LENGTH_SHORT).show();
-                            saveSubscription(user);
+                            // 🔥 Initialise les 12 mois dès la première inscription
+                            initializeMonthsForNewUser(db, user, tel);
                         }
                     } else {
                         Toast.makeText(this, "Échec connexion Firebase", Toast.LENGTH_LONG).show();
@@ -279,6 +280,105 @@ public class AdminInterfaceActivity extends AppCompatActivity {
         btncompta.setEnabled(isSubscribed);
     }
 
+    /**
+     * Création des 12 mois avec statut "non payé" (à appeler lors de l’inscription)
+     */
+    @SuppressLint("DefaultLocale")
+    public static void initializeMonthsForNewUser(FirebaseFirestore db, FirebaseUser user, String telephone) {
+        if (user == null) return;
 
+        String uid = user.getUid();
+        String email = user.getEmail();
+
+        Map<String, Object> mois = new HashMap<>();
+        for (int i = 1; i <= 12; i++) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("status", false); // non payé par défaut
+            mois.put(String.format("%02d", i), data);
+        }
+
+        Map<String, Object> paiement = new HashMap<>();
+        paiement.put("uid", uid);
+        paiement.put("email", email);
+        paiement.put("telephone", telephone);
+        paiement.put("mois", mois);
+
+        db.collection("paiements").document(uid).set(paiement);
+    }
+
+
+    private void markMonthAsPaid(FirebaseUser user) {
+        String uid = user.getUid();
+        String email = user.getEmail();
+        String currentMonth = new SimpleDateFormat("MM", Locale.getDefault()).format(new Date());
+
+        // Vérifier si email existe déjà
+        db.collection("paiements")
+                .whereEqualTo("email", email)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        // ✅ Email existe déjà
+                        Toast.makeText(this, "Cet email est déjà enregistré comme abonné", Toast.LENGTH_LONG).show();
+                        btnSubscribe.setEnabled(false);
+                        btnSubscribe.setText("Déjà abonné");
+                    } else {
+                        // ❌ Pas encore abonné → enregistrer paiement
+                        db.collection("paiements").document(uid)
+                                .update("mois." + currentMonth + ".status", true,
+                                        "email", email) // on ajoute l'email si pas encore mis
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(this, "Paiement validé pour le mois " + currentMonth, Toast.LENGTH_SHORT).show();
+                                    btnSubscribe.setEnabled(false);
+                                    btnSubscribe.setText("Déjà abonné");
+                                    updateAdminButtons(true);
+                                })
+                                .addOnFailureListener(e ->
+                                        Toast.makeText(this, "Erreur mise à jour : " + e.getMessage(), Toast.LENGTH_LONG).show()
+                                );
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Erreur Firestore : " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+    }
+
+
+    private void saveSubscription(FirebaseUser user) {
+        if (tel == null || tel.trim().isEmpty()) {
+            Toast.makeText(this, "⚠️ Numéro de téléphone vide.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        String uid = user.getUid();
+        String email = user.getEmail();
+        String currentMonth = new SimpleDateFormat("MM", Locale.getDefault()).format(new Date());
+
+        db.collection("paiements")
+                .whereEqualTo("email", email)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        // ✅ Email déjà abonné
+                        Toast.makeText(this, "Cet email est déjà enregistré comme abonné", Toast.LENGTH_LONG).show();
+                        btnSubscribe.setEnabled(false);
+                        btnSubscribe.setText("Déjà abonné");
+                    } else {
+                        // ❌ Nouvel abonné → mise à jour mois courant
+                        db.collection("paiements").document(uid)
+                                .update("mois." + currentMonth + ".status", true,
+                                        "email", email,
+                                        "telephone", tel)
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(this, "Abonnement enregistré ✅", Toast.LENGTH_SHORT).show();
+                                    btnSubscribe.setEnabled(false);
+                                    btnSubscribe.setText("Déjà abonné");
+                                    updateAdminButtons(true);
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(this, "Erreur Firestore : " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                });
+                    }
+                });
+    }
 
 }
