@@ -304,6 +304,7 @@ public class AdminInterfaceActivity extends AppCompatActivity {
         paiement.put("mois", mois);
 
         db.collection("paiements").document(uid).set(paiement);
+
     }
 
 

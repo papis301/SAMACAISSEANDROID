@@ -10,24 +10,38 @@ import com.pisco.samacaisseandroid.java.CartItem
 import com.pisco.samacaisseandroid.java.Supplier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 
-class AppDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class AppDbHelper(context: Context) : SQLiteOpenHelper(
+    context,
+    getDbFullPath(context),
+    null,
+    DATABASE_VERSION
+) {
 
     companion object {
         const val DATABASE_NAME = "app.db"
         const val DATABASE_VERSION = 1
 
-        // Tables
         const val TABLE_CLIENTS = "clients"
         const val TABLE_PRODUCTS = "products"
         const val TABLE_SALES = "sales"
         const val TABLE_SALES_ITEMS = "sales_items"
-        const val TABLE_SUPPLIERS: String = "suppliers"
+        const val TABLE_SUPPLIERS = "Suppliers"
+
+        fun getDbFullPath(context: Context): String {
+            val dbDir = File(context.getExternalFilesDir("databases"), "")
+            if (!dbDir.exists()) {
+                dbDir.mkdirs()
+            }
+            return File(dbDir, DATABASE_NAME).absolutePath
+        }
     }
+
 
     override fun onCreate(db: SQLiteDatabase) {
         // Création table users
