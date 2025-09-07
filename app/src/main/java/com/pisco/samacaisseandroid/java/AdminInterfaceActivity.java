@@ -47,6 +47,7 @@ public class AdminInterfaceActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 1001;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
+    FirebaseUser currentUser;
 
 
     @SuppressLint("MissingInflatedId")
@@ -74,6 +75,11 @@ public class AdminInterfaceActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         mAuth = FirebaseAuth.getInstance();
+         currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            // Pas connecté → lancer Google Sign-In
+            disableFeaturesDueToNonPayment();
+        }
 
 // Configurer Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -84,7 +90,7 @@ public class AdminInterfaceActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         btnSubscribe.setOnClickListener(v -> {
-            FirebaseUser currentUser = mAuth.getCurrentUser();
+
             if (currentUser == null) {
                 // Pas connecté → lancer Google Sign-In
                 signIn();
