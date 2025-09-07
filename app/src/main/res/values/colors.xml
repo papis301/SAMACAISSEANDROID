@@ -10,5 +10,8 @@
     <color name="colorSecondaryVariant">#689F38</color>
     <color name="colorOnPrimary">#FFFFFF</color>
     <color name="colorOnSecondary">#000000</color>
+    <color name="gray">#B0B0B0</color>
+    <color name="purple_500">#6200EE</color>
+
 
 </resources>

@@ -101,6 +101,8 @@ public class AdminInterfaceActivity extends AppCompatActivity {
             checkIfUserSubscribed(currentUser, btnSubscribe);
         }
 
+        checkMonthlyPayment(currentUser);
+
         //btnSubscribe.setOnClickListener(v -> saveSubscription(user));
 
         // Vérifier si l'entreprise existe
@@ -240,6 +242,10 @@ public class AdminInterfaceActivity extends AppCompatActivity {
                             Toast.makeText(this, "Connecté : " + user.getEmail(), Toast.LENGTH_SHORT).show();
                             // 🔥 Initialise les 12 mois dès la première inscription
                             initializeMonthsForNewUser(db, user, tel);
+                            Intent intent = new Intent(this, AdminInterfaceActivity.class);
+                            startActivity(intent);
+                            finish();
+
                         }
                     } else {
                         Toast.makeText(this, "Échec connexion Firebase", Toast.LENGTH_LONG).show();
@@ -380,6 +386,75 @@ public class AdminInterfaceActivity extends AppCompatActivity {
                                 });
                     }
                 });
+    }
+
+    private void checkMonthlyPayment(FirebaseUser user) {
+        if (user == null) return;
+
+        String uid = user.getUid();
+        String currentDay = new SimpleDateFormat("dd", Locale.getDefault()).format(new Date());
+        String currentMonth = new SimpleDateFormat("MM", Locale.getDefault()).format(new Date());
+
+        // On ne fait le check que le 1er du mois
+        //if (!currentDay.equals("01")) return;
+
+        db.collection("paiements")
+                .document(uid)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Map<String, Object> moisMap = (Map<String, Object>) documentSnapshot.get("mois");
+                        if (moisMap != null) {
+                            Map<String, Object> monthData = (Map<String, Object>) moisMap.get(currentMonth);
+                            if (monthData != null && monthData.containsKey("status")) {
+                                boolean isPaid = (boolean) monthData.get("status");
+                                if (!isPaid) {
+                                    // ❌ Mois non payé
+                                    Toast.makeText(this, "⚠️ Abonnement non payé pour ce mois !", Toast.LENGTH_LONG).show();
+                                    disableFeaturesDueToNonPayment();
+                                } else {
+                                    // ✅ Mois payé
+                                    enableFeatures();
+                                }
+                            }
+                        }
+                    } else {
+                        // Pas encore d'enregistrement pour l'utilisateur
+                        Toast.makeText(this, "⚠️ Vous n'avez pas d'abonnement actif !", Toast.LENGTH_LONG).show();
+                        disableFeaturesDueToNonPayment();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Erreur vérification paiement : " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+    }
+
+    // Méthodes pour activer/désactiver les fonctionnalités
+    private void disableFeaturesDueToNonPayment() {
+
+        btnHistory.setEnabled(false);
+        btnHistory.setBackgroundColor(getResources().getColor(R.color.gray)); // Couleur grise
+
+        btnfour.setEnabled(false);
+        btnfour.setBackgroundColor(getResources().getColor(R.color.gray));
+
+        btnachat.setEnabled(false);
+        btnachat.setBackgroundColor(getResources().getColor(R.color.gray));
+
+        btncompta.setEnabled(false);
+        btncompta.setBackgroundColor(getResources().getColor(R.color.gray));
+
+        btnSubscribe.setEnabled(true);
+        btnSubscribe.setBackgroundColor(getResources().getColor(R.color.purple_500)); // Couleur normale
+    }
+
+    private void enableFeatures() {
+        btnHistory.setEnabled(true);
+        btnfour.setEnabled(true);
+        btnachat.setEnabled(true);
+        btncompta.setEnabled(true);
+        btnSubscribe.setEnabled(false);
+        btnSubscribe.setText("Déjà abonné");
     }
 
 }
