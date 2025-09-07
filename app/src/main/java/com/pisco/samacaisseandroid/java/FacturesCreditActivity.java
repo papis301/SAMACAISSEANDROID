@@ -1,6 +1,9 @@
 package com.pisco.samacaisseandroid.java;
 
+import static com.pisco.samacaisseandroid.AppDbHelper.TABLE_SALES;
+
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -15,6 +18,8 @@ import androidx.core.view.WindowInsetsCompat;
 import com.pisco.samacaisseandroid.AppDbHelper;
 import com.pisco.samacaisseandroid.R;
 
+import java.util.List;
+
 public class FacturesCreditActivity extends AppCompatActivity {
 
     private AppDbHelper dbHelper;
@@ -28,34 +33,15 @@ public class FacturesCreditActivity extends AppCompatActivity {
         listFactures = findViewById(R.id.listFacturesCredit);
         dbHelper = new AppDbHelper(this);
 
-        loadFacturesCredit();
 
-//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-//            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-//            return insets;
-//        });
-    }
+        List<AppDbHelper.Sale> creditSales = dbHelper.getCreditSales();
 
-    private void loadFacturesCredit() {
-        Cursor cursor = dbHelper.getReadableDatabase()
-                .rawQuery("SELECT _id, clientName, total, date FROM sales WHERE type='credit'", null);
-
-        if (cursor != null && cursor.getCount() > 0) {
-            String[] from = {"clientName", "total", "date"};
-            int[] to = {R.id.txtClientName, R.id.txtTotal, R.id.txtDate};
-
-            SimpleCursorAdapter adapter = new SimpleCursorAdapter(
-                    this,
-                    R.layout.item_facture_credit,
-                    cursor,
-                    from,
-                    to,
-                    0
-            );
-            listFactures.setAdapter(adapter);
+        if (creditSales.isEmpty()) {
+            Toast.makeText(this, "Aucune facture à crédit", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "Aucune facture à crédit trouvée", Toast.LENGTH_SHORT).show();
+            FactureCreditAdapter adapter = new FactureCreditAdapter(this, creditSales);
+            listFactures.setAdapter(adapter);
         }
     }
+
 }

@@ -584,10 +584,11 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(
     }
 
 
-    data class Sale(
+    data class Sale @JvmOverloads constructor(
         val id: Int,
         val date: String,
-        val total: Double
+        val total: Double,
+        val clientName: String? = null
     )
 
     data class SaleItem(
@@ -1055,6 +1056,35 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(
         cursor.close()
         return list
     }
+
+    fun getCreditSales(): List<Sale> {
+        val creditSales = mutableListOf<Sale>()
+        val db = this.readableDatabase
+
+        val cursor = db.rawQuery(
+            """
+        SELECT s.id, s.date, s.total, c.phone AS client_name
+        FROM $TABLE_SALES s
+        LEFT JOIN $TABLE_CLIENTS c ON c.id = s.client_id
+        WHERE s.payment_type = ?
+        ORDER BY s.id DESC
+        """.trimIndent(),
+            arrayOf("credit")
+        )
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+                val date = cursor.getString(cursor.getColumnIndexOrThrow("date"))
+                val total = cursor.getDouble(cursor.getColumnIndexOrThrow("total"))
+                val clientName = cursor.getString(cursor.getColumnIndexOrThrow("client_name"))
+                creditSales.add(Sale(id, date, total, clientName))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return creditSales
+    }
+
 
 
 }
