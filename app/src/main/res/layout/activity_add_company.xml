@@ -1,31 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:padding="20dp"
+    android:gravity="center"> <!-- Centre horizontal et vertical -->
 
+    <!-- Logo en haut -->
+    <ImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@mipmap/ic_launcher_round"
+        android:contentDescription="Logo"
+    android:layout_marginBottom="20dp" />
+
+    <!-- Nom de l'entreprise -->
     <EditText
         android:id="@+id/etCompanyName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nom de l'entreprise" />
+        android:hint="Nom de l'entreprise"
+        android:layout_marginBottom="10dp" />
 
+    <!-- Adresse de l'entreprise -->
     <EditText
         android:id="@+id/etCompanyAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Adresse de l'entreprise" />
+        android:hint="Adresse de l'entreprise"
+        android:layout_marginBottom="10dp" />
 
+    <!-- Téléphone de l'entreprise -->
     <EditText
         android:id="@+id/etCompanyPhone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Téléphone de l'entreprise"
-        android:inputType="phone" />
+        android:inputType="phone"
+        android:layout_marginBottom="20dp" />
 
+    <!-- Bouton Enregistrer -->
     <Button
         android:id="@+id/btnSaveCompany"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Enregistrer" />
+
 </LinearLayout>
