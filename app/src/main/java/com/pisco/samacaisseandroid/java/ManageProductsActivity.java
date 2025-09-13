@@ -151,6 +151,23 @@ private ProductAdapter adapter;
 
                     // Enregistrement dans SQLite
                     SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+                    // Vérifier si le produit existe déjà
+                    Cursor cursor = db.query(
+                            "products",
+                            new String[]{"id"},
+                            "name = ?",
+                            new String[]{name},
+                            null, null, null
+                    );
+
+                    if (cursor.moveToFirst()) {
+                        Toast.makeText(this, "Ce produit existe déjà !", Toast.LENGTH_SHORT).show();
+                        cursor.close();
+                        return;
+                    }
+                    cursor.close();
+
                     ContentValues values = new ContentValues();
                     values.put("name", name);
                     values.put("price", price);
