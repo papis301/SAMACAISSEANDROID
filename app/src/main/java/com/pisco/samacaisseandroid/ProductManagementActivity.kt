@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.pisco.samacaisseandroid.Productkotlin
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -31,11 +32,12 @@ class ProductManagementActivity : ComponentActivity() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductManagementScreen(dbHelper: AppDbHelper) {
     val coroutineScope = rememberCoroutineScope()
-    var products by remember { mutableStateOf<List<Product>>(emptyList()) }
+    var products by remember { mutableStateOf<List<Productkotlin>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
 
     // Champs du formulaire
@@ -55,7 +57,7 @@ fun ProductManagementScreen(dbHelper: AppDbHelper) {
 
     // Charger produits au démarrage
     LaunchedEffect(Unit) {
-        products = dbHelper.getAllProducts()
+       // products = dbHelper.getAllProducts()
         isLoading = false
     }
 
@@ -196,7 +198,7 @@ fun ProductManagementScreen(dbHelper: AppDbHelper) {
 
                                 if (valid) {
                                     val now = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                                    val product = Product(
+                                    val product = Productkotlin(
                                         id = editingProductId ?: 0,
                                         name = name,
                                         price = price.toDouble(),
@@ -206,17 +208,17 @@ fun ProductManagementScreen(dbHelper: AppDbHelper) {
                                         dateAdded = now
                                     )
 
-                                    coroutineScope.launch {
-                                        val success = if (editingProductId == null) {
-                                            dbHelper.addProduct(product)
-                                        } else {
-                                            dbHelper.updateProduct(product)
-                                        }
-                                        if (success) {
-                                            products = dbHelper.getAllProducts()
-                                            resetForm()
-                                        }
-                                    }
+//                                    coroutineScope.launch {
+//                                        val success = if (editingProductId == null) {
+//                                            //dbHelper.addProduct(product)
+//                                        } else {
+//                                            //dbHelper.updateProduct(product)
+//                                        }
+//                                        if (success) {
+//                                           // products = dbHelper.getAllProducts()
+//                                            resetForm()
+//                                        }
+//                                    }
                                 }
                             },
                             modifier = Modifier.weight(1f)
@@ -229,7 +231,7 @@ fun ProductManagementScreen(dbHelper: AppDbHelper) {
                                 onClick = {
                                     coroutineScope.launch {
                                         dbHelper.deleteProduct(editingProductId!!)
-                                        products = dbHelper.getAllProducts()
+                                       // products = dbHelper.getAllProducts()
                                         resetForm()
                                     }
                                 },

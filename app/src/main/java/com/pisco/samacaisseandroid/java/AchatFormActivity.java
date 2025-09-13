@@ -15,7 +15,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.pisco.samacaisseandroid.AppDbHelper;
-import com.pisco.samacaisseandroid.Product;
+import com.pisco.samacaisseandroid.java.Product;
 import com.pisco.samacaisseandroid.R;
 
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +33,7 @@ public class AchatFormActivity extends AppCompatActivity {
     private AppDbHelper dbHelper;
 
     private List<Supplier> suppliers;
-    private @NotNull List<com.pisco.samacaisseandroid.@NotNull Product> products;
+    private @NotNull List<Product> products;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

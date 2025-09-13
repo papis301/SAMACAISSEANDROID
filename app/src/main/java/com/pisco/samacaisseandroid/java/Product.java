@@ -8,20 +8,45 @@ public class Product {
     private double quantity;
     private String unit;
     private String image;
+    private String date; // <-- nouveau champ
 
-    // Constructeur complet
-    public Product(int id, String name, double price, double quantity, String unit, String image) {
+    public Product(int id, String name, double price, double quantity, String unit, String image, String date) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.quantity = quantity;
         this.unit = unit;
         this.image = image;
+        this.date = date;
     }
 
-    // Optionnel : constructeur simple pour nom + prix
     public Product(int id, String name, double price) {
-        this(id, name, price, 0, "", null);
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.quantity = 0.0;
+        this.unit = "";
+        this.image = "";
+        this.date = "";
+    }
+
+    public Product(int id, String name, double price, double quantity, String unit, String imageUri) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.quantity = 0.0;
+        this.unit = "";
+        this.image = "";
+        this.date = "";
+    }
+
+    // Getters et setters
+    public String getDate() { return date; }
+    public void setDate(String date) { this.date = date; }
+
+    @Override
+    public String toString() {
+        return name + " - " + price + " CFA / " + quantity + " " + unit + " (" + date + ")";
     }
 
     // Getters et setters
@@ -42,7 +67,8 @@ public class Product {
 
     public String getImage() { return image; }
     public void setImage(String image) { this.image = image; }
-}
+
+    }
 
 
 // CartItem.java

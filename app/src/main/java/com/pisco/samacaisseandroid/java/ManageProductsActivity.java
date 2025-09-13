@@ -17,15 +17,18 @@ import com.pisco.samacaisseandroid.R;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class ManageProductsActivity extends AppCompatActivity {
 
     private ListView listProducts;
     private Button btnAddProduct;
-    private ArrayAdapter<String> adapter;
-    private ArrayList<Product> products = new ArrayList<>();
+//    private ArrayAdapter<String> adapter;
+private ProductAdapter adapter;
+    private List<Product> products = new ArrayList<>();
     private AppDbHelper dbHelper;
 
     private static final int PICK_IMAGE_REQUEST = 100;
@@ -40,10 +43,17 @@ public class ManageProductsActivity extends AppCompatActivity {
         btnAddProduct = findViewById(R.id.btnAddProduct);
         dbHelper = new AppDbHelper(this);
 
+        products = new ArrayList<>();
+        adapter = new ProductAdapter(this, products, dbHelper);
+        listProducts.setAdapter(adapter);
         loadProductsFromDb();
 
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, getProductNames());
-        listProducts.setAdapter(adapter);
+        //loadProductsFromDb();
+
+//        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, getProductNames());
+//        listProducts.setAdapter(adapter);
+
+
 
         btnAddProduct.setOnClickListener(v -> showAddProductDialog());
 
@@ -55,31 +65,39 @@ public class ManageProductsActivity extends AppCompatActivity {
         });
     }
 
+//    private void loadProductsFromDb() {
+//        products.clear();
+//        SQLiteDatabase db = dbHelper.getReadableDatabase();
+//        Cursor cursor = db.rawQuery("SELECT id, name, price, quantity, unit, image_uri FROM products", null);
+//        if (cursor.moveToFirst()) {
+//            do {
+//                int id = cursor.getInt(0);
+//                String name = cursor.getString(1);
+//                double price = cursor.getDouble(2);
+//                double quantity = cursor.getDouble(3);
+//                String unit = cursor.getString(4);
+//                String imageUri = cursor.getString(5);
+//                products.add(new Product(id, name, price, quantity, unit, imageUri));
+//            } while (cursor.moveToNext());
+//        }
+//        cursor.close();
+//    }
+
     private void loadProductsFromDb() {
-        products.clear();
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT id, name, price, quantity, unit, image_uri FROM products", null);
-        if (cursor.moveToFirst()) {
-            do {
-                int id = cursor.getInt(0);
-                String name = cursor.getString(1);
-                double price = cursor.getDouble(2);
-                double quantity = cursor.getDouble(3);
-                String unit = cursor.getString(4);
-                String imageUri = cursor.getString(5);
-                products.add(new Product(id, name, price, quantity, unit, imageUri));
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
+        products.clear(); // vider l'ancienne liste
+        products.addAll(dbHelper.getAllProducts()); // ajouter les produits depuis SQLite
+        adapter.notifyDataSetChanged(); // rafraîchir l'affichage
     }
 
-    private ArrayList<String> getProductNames() {
-        ArrayList<String> names = new ArrayList<>();
-        for (Product p : products) {
-            names.add(p.getName() + " - " + p.getPrice() + " CFA / " + p.getQuantity() + " " + p.getUnit());
-        }
-        return names;
-    }
+
+
+//    private ArrayList<String> getProductNames() {
+//        ArrayList<String> names = new ArrayList<>();
+//        for (com.pisco.samacaisseandroid.Product p : products) {
+//            names.add(p.getName() + " - " + p.getPrice() + " CFA / " + p.getQuantity() + " " + p.getUnit());
+//        }
+//        return names;
+//    }
 
     private void showAddProductDialog() {
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_product, null);
@@ -122,9 +140,7 @@ public class ManageProductsActivity extends AppCompatActivity {
                     priceStr = priceStr.replace(",", ".");
                     qtyStr = qtyStr.replace(",", ".");
 
-                    double price;
-                    double quantity;
-
+                    double price, quantity;
                     try {
                         price = Double.parseDouble(priceStr);
                         quantity = Double.parseDouble(qtyStr);
@@ -146,14 +162,12 @@ public class ManageProductsActivity extends AppCompatActivity {
                     }
                     db.insert("products", null, values);
 
-                    loadProductsFromDb();
-                    adapter.clear();
-                    adapter.addAll(getProductNames());
-                    adapter.notifyDataSetChanged();
+                    loadProductsFromDb(); // recharge la liste avec le nouvel élément
                     selectedImageUri = null;
                 })
                 .setNegativeButton("Annuler", null)
                 .show();
+
     }
 
 
@@ -167,7 +181,6 @@ public class ManageProductsActivity extends AppCompatActivity {
     }
 
     private void showEditProductDialog(Product product) {
-        // Même logique que l'ajout mais prérempli
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_product, null);
         EditText inputName = dialogView.findViewById(R.id.inputName);
         EditText inputPrice = dialogView.findViewById(R.id.inputPrice);
@@ -175,20 +188,22 @@ public class ManageProductsActivity extends AppCompatActivity {
         Spinner spinnerUnit = dialogView.findViewById(R.id.spinnerUnit);
         Button btnChooseImage = dialogView.findViewById(R.id.btnChooseImage);
 
+        // Pré-remplir
         inputName.setText(product.getName());
         inputPrice.setText(String.valueOf(product.getPrice()));
         inputQuantity.setText(String.valueOf(product.getQuantity()));
 
-        ArrayAdapter<String> unitAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
-                new String[]{"kg", "litre", "mètre","unité"});
+        // Configurer le spinner
+        String[] units = {"kg", "litre", "mètre", "unité"};
+        ArrayAdapter<String> unitAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, units);
         unitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerUnit.setAdapter(unitAdapter);
         spinnerUnit.setSelection(unitAdapter.getPosition(product.getUnit()));
 
         btnChooseImage.setOnClickListener(v -> {
-            Intent intent = new Intent();
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
             startActivityForResult(Intent.createChooser(intent, "Choisir Image"), PICK_IMAGE_REQUEST);
         });
 
@@ -197,8 +212,23 @@ public class ManageProductsActivity extends AppCompatActivity {
                 .setView(dialogView)
                 .setPositiveButton("Modifier", (dialog, which) -> {
                     String name = inputName.getText().toString().trim();
-                    double price = Double.parseDouble(inputPrice.getText().toString().trim());
-                    double quantity = Double.parseDouble(inputQuantity.getText().toString().trim());
+                    String priceStr = inputPrice.getText().toString().trim();
+                    String quantityStr = inputQuantity.getText().toString().trim();
+
+                    if (name.isEmpty() || priceStr.isEmpty() || quantityStr.isEmpty()) {
+                        Toast.makeText(this, "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    double price, quantity;
+                    try {
+                        price = Double.parseDouble(priceStr);
+                        quantity = Double.parseDouble(quantityStr);
+                    } catch (NumberFormatException e) {
+                        Toast.makeText(this, "Valeurs invalides", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     String unit = spinnerUnit.getSelectedItem().toString();
                     String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
 
@@ -215,22 +245,21 @@ public class ManageProductsActivity extends AppCompatActivity {
 
                     db.update("products", values, "id=?", new String[]{String.valueOf(product.getId())});
 
-                    loadProductsFromDb();
-                    adapter.clear();
-                    adapter.addAll(getProductNames());
-                    adapter.notifyDataSetChanged();
+                    loadProductsFromDb(); // recharge liste produits
+                    adapter.notifyDataSetChanged(); // rafraîchit l’affichage
                     selectedImageUri = null;
                 })
                 .setNegativeButton("Annuler", null)
                 .show();
     }
 
+
     private void deleteProduct(Product product) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.delete("products", "id=?", new String[]{String.valueOf(product.getId())});
         loadProductsFromDb();
         adapter.clear();
-        adapter.addAll(getProductNames());
+        adapter.addAll((Product) products);
         adapter.notifyDataSetChanged();
     }
 
@@ -241,4 +270,53 @@ public class ManageProductsActivity extends AppCompatActivity {
             selectedImageUri = data.getData();
         }
     }
+
+    public void showEditDialog(Product product) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Modifier produit");
+
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_edit_product, null);
+        builder.setView(view);
+
+        EditText etName = view.findViewById(R.id.etName);
+        EditText etPrice = view.findViewById(R.id.etPrice);
+        EditText etQuantity = view.findViewById(R.id.etQuantity);
+        Spinner spUnit = view.findViewById(R.id.spUnit);
+
+        // Remplir les champs avec les données actuelles
+        etName.setText(product.getName());
+        etPrice.setText(String.valueOf(product.getPrice()));
+        etQuantity.setText(String.valueOf(product.getQuantity()));
+
+        // Spinner pour les unités
+        String[] units = {"kg", "litre", "mètre", "unité"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, units);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spUnit.setAdapter(adapter);
+
+        // Pré-sélectionner l'unité actuelle
+        int unitPosition = adapter.getPosition(product.getUnit());
+        spUnit.setSelection(unitPosition);
+
+        builder.setPositiveButton("Enregistrer", (dialog, which) -> {
+            String newName = etName.getText().toString();
+            double newPrice = Double.parseDouble(etPrice.getText().toString());
+            double newQuantity = Double.parseDouble(etQuantity.getText().toString());
+            String newUnit = spUnit.getSelectedItem().toString();
+
+            // Mettre à jour le produit
+            product.setName(newName);
+            product.setPrice(newPrice);
+            product.setQuantity(newQuantity);
+            product.setUnit(newUnit);
+
+            dbHelper.updateProduct(product); // tu dois avoir cette méthode dans AppDbHelper
+            loadProductsFromDb(); // recharge la liste
+        });
+
+        builder.setNegativeButton("Annuler", null);
+        builder.show();
+    }
+
+
 }

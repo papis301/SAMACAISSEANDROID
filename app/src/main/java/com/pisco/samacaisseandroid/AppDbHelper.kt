@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.pisco.samacaisseandroid.java.Achat
 import com.pisco.samacaisseandroid.java.CartItem
+import com.pisco.samacaisseandroid.java.Product
 import com.pisco.samacaisseandroid.java.Supplier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -360,28 +361,28 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(
         id != -1L
     }
 
-    suspend fun getAllProductsSuspend(): List<Product> = withContext(Dispatchers.IO) {
-        val products = mutableListOf<Product>()
-        val db = readableDatabase
-        val cursor = db.rawQuery("SELECT id, name, price, quantity, date_added, image_uri, unit FROM $TABLE_PRODUCTS", null)
-        if (cursor.moveToFirst()) {
-            do {
-                products.add(
-                    Product(
-                        id = cursor.getInt(0),
-                        name = cursor.getString(1),
-                        price = cursor.getDouble(2),
-                        quantity = cursor.getDouble(3),
-                        dateAdded = cursor.getString(4),
-                        imageUri = cursor.getString(5),
-                        unit = cursor.getString(6)
-                    )
-                )
-            } while (cursor.moveToNext())
-        }
-        cursor.close()
-        products
-    }
+//    suspend fun getAllProductsSuspend(): List<Product> = withContext(Dispatchers.IO) {
+//        val products = mutableListOf<Product>()
+//        val db = readableDatabase
+//        val cursor = db.rawQuery("SELECT id, name, price, quantity, date_added, image_uri, unit FROM $TABLE_PRODUCTS", null)
+//        if (cursor.moveToFirst()) {
+//            do {
+//                products.add(
+//                    Product(
+//                        id = cursor.getInt(0),
+//                        name = cursor.getString(1),
+//                        price = cursor.getDouble(2),
+//                        quantity = cursor.getDouble(3),
+//                        dateAdded = cursor.getString(4),
+//                        imageUri = cursor.getString(5),
+//                        unit = cursor.getString(6)
+//                    )
+//                )
+//            } while (cursor.moveToNext())
+//        }
+//        cursor.close()
+//        products
+//    }
 
     suspend fun updateProductSuspend(
         id: Int,
@@ -508,7 +509,7 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(
             put("price", product.price)
             put("quantity", product.quantity)
             put("unit", product.unit)
-            put("image_uri", product.imageUri) // ⚠ nom exact de la colonne
+            put("image_uri", product.image) // ⚠ nom exact de la colonne
             put("date_added", now) // ⚠ nom exact de la colonne
         }
         val result = db.insert(TABLE_PRODUCTS, null, values)
@@ -523,8 +524,8 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(
             put("price", product.price)
             put("quantity", product.quantity)
             put("unit", product.unit)
-            put("image_uri", product.imageUri)
-            put("date_added", product.dateAdded)
+            put("image_uri", product.image)
+            put("date_added", product.date)
         }
         val result = db.update(
             TABLE_PRODUCTS,
@@ -535,33 +536,33 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(
         return result > 0
     }
 
-    // Récupérer tous les produits
     fun getAllProducts(): List<Product> {
-        val db = readableDatabase
+        val products: MutableList<Product> = ArrayList()
+        val db = this.readableDatabase
+
         val cursor = db.query(
             TABLE_PRODUCTS,
             arrayOf("id", "name", "price", "quantity", "unit", "image_uri", "date_added"),
             null, null, null, null, "id DESC"
         )
 
-        val products = mutableListOf<Product>()
-        cursor.use {
-            while (it.moveToNext()) {
-                products.add(
-                    Product(
-                        id = it.getInt(it.getColumnIndexOrThrow("id")),
-                        name = it.getString(it.getColumnIndexOrThrow("name")),
-                        price = it.getDouble(it.getColumnIndexOrThrow("price")),
-                        quantity = it.getDouble(it.getColumnIndexOrThrow("quantity")),
-                        unit = it.getString(it.getColumnIndexOrThrow("unit")),
-                        imageUri = it.getString(it.getColumnIndexOrThrow("image_uri")), // ⚠ nom exact
-                        dateAdded = it.getString(it.getColumnIndexOrThrow("date_added")) // ⚠ nom exact
-                    )
-                )
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+                val price = cursor.getDouble(cursor.getColumnIndexOrThrow("price"))
+                val quantity = cursor.getDouble(cursor.getColumnIndexOrThrow("quantity"))
+                val unit = cursor.getString(cursor.getColumnIndexOrThrow("unit"))
+                val image = cursor.getString(cursor.getColumnIndexOrThrow("image_uri"))
+                val date = cursor.getString(cursor.getColumnIndexOrThrow("date_added"))
+
+                products.add(Product(id, name, price, quantity, unit, image, date))
             }
+            cursor.close()
         }
         return products
     }
+
 
     fun insertInvoice(total: Double, date: String): Long {
         val db = writableDatabase
@@ -1085,6 +1086,16 @@ class AppDbHelper(context: Context) : SQLiteOpenHelper(
         return creditSales
     }
 
+//    fun updateProduct(product: Product): Int {
+//        val db = this.writableDatabase
+//        val values = ContentValues()
+//        values.put("name", product.name)
+//        values.put("price", product.price)
+//        values.put("quantity", product.quantity)
+//        values.put("unit", product.unit)
+//
+//        return db.update("products", values, "id = ?", arrayOf(product.id.toString()))
+//    }
 
 
 }
